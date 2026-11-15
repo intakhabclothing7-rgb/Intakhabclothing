@@ -107,8 +107,10 @@ export async function uploadMediaToSupabase(
   const isImage = file.type.startsWith('image/');
   const isVideo = file.type.startsWith('video/');
 
-  if (!isImage && !(folder === 'review-uploads' && isVideo)) {
-    throw new Error('Unsupported file type. Please upload a valid JPG, PNG, or WEBP image.');
+  const allowVideo = folder === 'products' || folder === 'review-uploads';
+
+  if (!isImage && !(allowVideo && isVideo)) {
+    throw new Error('Unsupported file type. Please upload a valid image (JPG, PNG, WEBP) or video (MP4, WEBM, MOV).');
   }
 
   if (isImage && file.size > MAX_IMAGE_BYTES) {

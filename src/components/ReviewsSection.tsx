@@ -12,9 +12,8 @@ import {
   Loader2,
   ShieldCheck,
 } from 'lucide-react';
-import { Product, Review, ReviewMedia } from '../types';
+import { Review, ReviewMedia } from '../types';
 import { INITIAL_REVIEWS } from '../data/reviews';
-import { PRODUCTS as DEFAULT_PRODUCTS } from '../data/products';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { submitPublicReview } from '../services/supabaseStore';
 
@@ -22,19 +21,15 @@ const STORAGE_KEY = 'intakhab_customer_reviews_v1';
 
 interface ReviewsSectionProps {
   reviews?: Review[];
-  products?: Product[];
   fromSupabase?: boolean;
   onReviewSubmitted?: () => void;
 }
 
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   reviews: propReviews,
-  products: propProducts,
   fromSupabase = false,
   onReviewSubmitted,
 }) => {
-  const availableProducts = propProducts && propProducts.length > 0 ? propProducts : DEFAULT_PRODUCTS;
-
   const [reviews, setReviews] = useState<Review[]>(() => {
     if (propReviews && propReviews.length > 0) {
       return propReviews;
@@ -67,26 +62,14 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-  // Form states
+  // Simplified Form states (Name, City, Review, Media)
   const [customerName, setCustomerName] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [city, setCity] = useState('');
-  const [rating, setRating] = useState<number>(5);
-  const [selectedProductId, setSelectedProductId] = useState<string>(availableProducts[0]?.id || '');
   const [comment, setComment] = useState('');
   const [attachedMedia, setAttachedMedia] = useState<(ReviewMedia & { file?: File })[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (
-      selectedProductId &&
-      !availableProducts.some((p) => p.id === selectedProductId)
-    ) {
-      setSelectedProductId(availableProducts[0]?.id || '');
-    }
-  }, [availableProducts, selectedProductId]);
 
   useEffect(() => {
     if (fromSupabase) return;
@@ -154,8 +137,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
       return;
     }
 
-    const chosenProduct = availableProducts.find((p) => p.id === selectedProductId);
-
     if (isSupabaseConfigured) {
       setIsSubmitting(true);
       setFormError(null);
@@ -166,11 +147,11 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
 
         const result = await submitPublicReview({
           customerName: customerName.trim(),
-          customerEmail: customerEmail.trim(),
+          customerEmail: '',
           city: city.trim(),
-          rating,
-          productId: chosenProduct?.id || null,
-          productName: chosenProduct?.name || '',
+          rating: 5,
+          productId: null,
+          productName: '',
           comment: comment.trim(),
           mediaFiles,
         });
@@ -183,10 +164,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         }
 
         setCustomerName('');
-        setCustomerEmail('');
         setCity('');
-        setRating(5);
-        setSelectedProductId(availableProducts[0]?.id || '');
         setComment('');
         setAttachedMedia([]);
         setIsFormOpen(false);
@@ -208,12 +186,10 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     // Fallback local submission when Supabase env vars are not configured yet
     const newReview: Review = {
       id: `rev-${Date.now()}`,
-      productId: chosenProduct?.id || null,
+      productId: null,
       customerName: customerName.trim(),
-      customerEmail: customerEmail.trim() || undefined,
       city: city.trim(),
-      rating,
-      productName: chosenProduct?.name || undefined,
+      rating: 5,
       comment: comment.trim(),
       date: new Date().toLocaleDateString('en-GB', {
         day: '2-digit',
@@ -229,10 +205,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
 
     setReviews((prev) => [newReview, ...prev]);
     setCustomerName('');
-    setCustomerEmail('');
     setCity('');
-    setRating(5);
-    setSelectedProductId(availableProducts[0]?.id || '');
     setComment('');
     setAttachedMedia([]);
     setFormError(null);
@@ -326,40 +299,11 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               </div>
             )}
 
-            {/* Star Rating Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-stone-800 uppercase tracking-wider">
-                Your Rating
-              </label>
-              <div className="flex items-center gap-1.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    className="p-1 focus:outline-none transition-transform hover:scale-110 cursor-pointer"
-                    aria-label={`Rate ${star} stars`}
-                  >
-                    <Star
-                      className={`w-6 h-6 ${
-                        star <= rating
-                          ? 'fill-[#D4A456] text-[#D4A456]'
-                          : 'text-stone-300'
-                      }`}
-                    />
-                  </button>
-                ))}
-                <span className="ml-2 text-xs text-stone-600 font-medium">
-                  {rating} / 5
-                </span>
-              </div>
-            </div>
-
-            {/* Name, Email (Private), City, Suit */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Name and City */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-stone-700 mb-1">
-                  Customer Name *
+                  Your Name *
                 </label>
                 <input
                   type="text"
@@ -367,19 +311,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="e.g. Ayesha Kamran"
-                  className="w-full text-xs py-2.5 px-3 border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-stone-700 mb-1">
-                  Email (Private, optional)
-                </label>
-                <input
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="Only visible to store team"
                   className="w-full text-xs py-2.5 px-3 border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5]"
                 />
               </div>
@@ -396,24 +327,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                   placeholder="e.g. Lahore, Karachi, Islamabad"
                   className="w-full text-xs py-2.5 px-3 border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5]"
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-stone-700 mb-1">
-                  Suit Purchased (Optional)
-                </label>
-                <select
-                  value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                  className="w-full text-xs py-2.5 px-3 border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5] bg-white cursor-pointer"
-                >
-                  {availableProducts.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                  <option value="">Other / General Experience</option>
-                </select>
               </div>
             </div>
 

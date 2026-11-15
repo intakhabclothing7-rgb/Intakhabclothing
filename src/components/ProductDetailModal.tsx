@@ -26,6 +26,14 @@ interface ProductDetailModalProps {
     pantLength: string;
     quantity: number;
   }) => void;
+  onBuyNow?: (item: {
+    product: Product;
+    shirtSize: string;
+    pantSize: string;
+    shirtLength: string;
+    pantLength: string;
+    quantity: number;
+  }) => void;
   isWishlisted: boolean;
   onToggleWishlist: (productId: string, e: React.MouseEvent) => void;
   onOpenSizeChart: () => void;
@@ -37,6 +45,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
   onClose,
   onAddToCart,
+  onBuyNow,
   isWishlisted,
   onToggleWishlist,
   onOpenSizeChart,
@@ -101,6 +110,23 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     }
     setSelectionError(null);
     onAddToCart({
+      product,
+      shirtSize,
+      pantSize,
+      shirtLength,
+      pantLength,
+      quantity,
+    });
+  };
+
+  const handleBuyNow = () => {
+    if (!product.inStock || !onBuyNow) return;
+    if (!shirtSize || !pantSize) {
+      setSelectionError('Please choose both Shirt Size and Pant Size before proceeding to checkout.');
+      return;
+    }
+    setSelectionError(null);
+    onBuyNow({
       product,
       shirtSize,
       pantSize,
@@ -430,14 +456,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <button
                     onClick={handleAddToCart}
                     disabled={!product.inStock}
-                    className={`flex-1 py-3.5 px-6 uppercase tracking-widest text-xs font-semibold text-center transition-all duration-200 ${
+                    className={`flex-1 py-3.5 px-4 uppercase tracking-widest text-xs font-semibold text-center transition-all duration-200 cursor-pointer ${
                       product.inStock
-                        ? 'bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black shadow-md hover:shadow-lg active:scale-[0.99] border border-[#D8C7A5]'
+                        ? 'bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black shadow-sm hover:shadow-md active:scale-[0.99] border border-[#D8C7A5]'
                         : 'bg-stone-300 text-stone-500 cursor-not-allowed'
                     }`}
                   >
                     {product.inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
                   </button>
+
+                  {onBuyNow && product.inStock && (
+                    <button
+                      type="button"
+                      onClick={handleBuyNow}
+                      className="flex-1 py-3.5 px-4 uppercase tracking-widest text-xs font-semibold text-center bg-stone-900 hover:bg-black text-white shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-200 cursor-pointer"
+                    >
+                      BUY NOW
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -482,6 +518,23 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       )}
 
                       {product.description && <p className="leading-relaxed">{product.description}</p>}
+
+                      {product.videoUrl && (
+                        <div className="pt-2 space-y-1.5">
+                          <span className="font-semibold text-stone-900 block uppercase tracking-wider text-[11px]">
+                            Product Video Showcase
+                          </span>
+                          <div className="border border-stone-200 bg-black overflow-hidden">
+                            <video
+                              src={product.videoUrl}
+                              controls
+                              playsInline
+                              preload="metadata"
+                              className="w-full max-h-[380px] object-contain"
+                            />
+                          </div>
+                        </div>
+                      )}
 
                       {product.features && product.features.length > 0 && (
                         <div className="space-y-1.5 pt-1">

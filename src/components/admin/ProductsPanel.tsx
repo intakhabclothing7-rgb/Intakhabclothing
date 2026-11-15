@@ -20,7 +20,12 @@ import {
   deleteAdminProduct,
   reorderAdminProducts,
 } from '../../services/supabaseStore';
-import { ConfirmDialog, StorageImageUploader, ToastNotice } from './AdminShared';
+import {
+  ConfirmDialog,
+  StorageImageUploader,
+  StorageVideoUploader,
+  ToastNotice,
+} from './AdminShared';
 
 interface ProductsPanelProps {
   products: Product[];
@@ -55,6 +60,7 @@ interface ProductFormState {
   isBestSeller: boolean;
   displayOrder: string;
   images: string[];
+  videoUrl: string;
 }
 
 const emptyForm = (nextOrder: number): ProductFormState => ({
@@ -82,6 +88,7 @@ const emptyForm = (nextOrder: number): ProductFormState => ({
   isBestSeller: false,
   displayOrder: String(nextOrder),
   images: [],
+  videoUrl: '',
 });
 
 export const ProductsPanel: React.FC<ProductsPanelProps> = ({
@@ -91,7 +98,7 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
   onNotify,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'bestsellers'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'bestsellers' | 'sale'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState<ProductFormState>(() => emptyForm(products.length + 1));
   const [isSaving, setIsSaving] = useState(false);
@@ -110,6 +117,12 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
     if (statusFilter === 'active') return p.isActive !== false;
     if (statusFilter === 'inactive') return p.isActive === false;
     if (statusFilter === 'bestsellers') return Boolean(p.isBestSeller);
+    if (statusFilter === 'sale') {
+      return (
+        (p.originalPrice !== undefined && p.originalPrice > p.price) ||
+        p.category.toLowerCase() === 'sale'
+      );
+    }
     return true;
   });
 
@@ -147,6 +160,7 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
       isBestSeller: Boolean(product.isBestSeller),
       displayOrder: String(product.displayOrder ?? 1),
       images: [...(product.images || [])],
+      videoUrl: product.videoUrl || '',
     });
     setManualImageUrl('');
     setIsModalOpen(true);
@@ -199,6 +213,7 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
         isBestSeller: form.isBestSeller,
         displayOrder: Number(form.displayOrder) || 0,
         images: form.images,
+        videoUrl: form.videoUrl,
       });
 
       await onRefresh();
@@ -281,6 +296,7 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
             <option value="active">Active Only</option>
             <option value="inactive">Inactive / Hidden</option>
             <option value="bestsellers">Best Sellers</option>
+            <option value="sale">On Sale</option>
           </select>
         </div>
 
@@ -406,6 +422,12 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
                           <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" /> Best Seller
                         </span>
                       )}
+                      {((p.originalPrice !== undefined && p.originalPrice > p.price) ||
+                        p.category.toLowerCase() === 'sale') && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-semibold">
+                          On Sale
+                        </span>
+                      )}
                       {p.isFeatured && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-900 text-white text-[10px] font-medium">
                           <Sparkles className="w-2.5 h-2.5" /> Featured
@@ -521,6 +543,9 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
                     placeholder="None"
                     className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
                   />
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    Adds suit to SALE menu when lower than Regular Price.
+                  </p>
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-800 mb-1">Stock Qty</label>
@@ -650,6 +675,30 @@ export const ProductsPanel: React.FC<ProductsPanelProps> = ({
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
                 />
+              </div>
+
+              {/* Product Showcase Video (Displayed Right Under Description on Website) */}
+              <div className="space-y-3 p-4 border border-stone-200 bg-[#FAF6F2]">
+                <StorageVideoUploader
+                  folder="products"
+                  label="Product Video (Displays Under Description)"
+                  value={form.videoUrl}
+                  onUploaded={(url) => setForm((prev) => ({ ...prev, videoUrl: url }))}
+                  onClear={() => setForm((prev) => ({ ...prev, videoUrl: '' }))}
+                />
+
+                <div>
+                  <label className="block text-[11px] text-stone-600 mb-1">
+                    Or paste direct video link (MP4 / WEBM)
+                  </label>
+                  <input
+                    type="url"
+                    value={form.videoUrl}
+                    onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+                    placeholder="https://.../product-video.mp4"
+                    className="w-full py-1.5 px-3 border border-stone-300 bg-white focus:outline-none focus:border-[#D8C7A5]"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

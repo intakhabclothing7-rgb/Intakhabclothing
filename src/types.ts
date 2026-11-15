@@ -20,6 +20,7 @@ export interface Product {
   features: string[];
   careInstructions: string[];
   images: string[];
+  videoUrl?: string;
   isBestSeller?: boolean;
   isNewArrival?: boolean;
   isFeatured?: boolean;

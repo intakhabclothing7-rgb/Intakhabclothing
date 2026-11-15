@@ -9,6 +9,8 @@ interface BestSellersCarouselProps {
   onViewAll: () => void;
   onSelectCategory: (category: string) => void;
   onSelectProduct?: (product: Product) => void;
+  onQuickAddToCart?: (product: Product, e: React.MouseEvent) => void;
+  onQuickBuyNow?: (product: Product, e: React.MouseEvent) => void;
 }
 
 export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
@@ -18,6 +20,8 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
   onViewAll,
   onSelectCategory,
   onSelectProduct,
+  onQuickAddToCart,
+  onQuickBuyNow,
 }) => {
   const slides = entries.filter((e) => e.isActive !== false && (e.customImageUrl || e.product?.images?.[0]));
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -200,6 +204,41 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
                   {currentSlide.customSubtitle ||
                     `${currentSlide.product?.material} — Rs.${currentSlide.product?.price.toLocaleString('en-PK')}`}
                 </p>
+              )}
+
+              {currentSlide.product && (onQuickAddToCart || onQuickBuyNow) && (
+                <div className="flex items-center justify-center gap-2.5 pt-2.5">
+                  {onQuickAddToCart && (
+                    <button
+                      type="button"
+                      disabled={!currentSlide.product.inStock}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (currentSlide.product?.inStock) {
+                          onQuickAddToCart(currentSlide.product, e);
+                        }
+                      }}
+                      className="min-h-[38px] px-4 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-900 text-[11px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Add to Cart
+                    </button>
+                  )}
+                  {onQuickBuyNow && (
+                    <button
+                      type="button"
+                      disabled={!currentSlide.product.inStock}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (currentSlide.product?.inStock) {
+                          onQuickBuyNow(currentSlide.product, e);
+                        }
+                      }}
+                      className="min-h-[38px] px-5 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[11px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {currentSlide.product.inStock ? 'Buy Now' : 'Sold Out'}
+                    </button>
+                  )}
+                </div>
               )}
 
               {slides.length > 1 && (

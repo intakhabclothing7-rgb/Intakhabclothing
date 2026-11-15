@@ -32,6 +32,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           { label: 'ALL COLLECTIONS', value: 'All' },
           { label: 'NEW ARRIVALS', value: 'New Arrivals' },
           { label: 'BEST SELLERS', value: 'Best Sellers' },
+          { label: 'SALE', value: 'Sale' },
         ];
 
   return (

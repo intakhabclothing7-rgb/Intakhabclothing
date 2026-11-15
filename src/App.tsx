@@ -26,6 +26,7 @@ import { ProductCard } from './components/ProductCard';
 import { Footer } from './components/Footer';
 import { BestSellersCarousel } from './components/BestSellersCarousel';
 import { ReviewsSection } from './components/ReviewsSection';
+import { WebsiteQrSection } from './components/WebsiteQrSection';
 import { WhatsAppIcon } from './components/WhatsAppIcon';
 import { AlertCircle, ArrowLeft, ArrowRight, ChevronRight, Sparkles, X } from 'lucide-react';
 import gulzarFestiveImg from './assets/images/gulzar_festive_boutique.webp';
@@ -193,8 +194,7 @@ export default function App() {
     }
   };
 
-  // Cart operations
-  const handleAddToCart = (itemConfig: {
+  const upsertCartItem = (itemConfig: {
     product: Product;
     shirtSize: string;
     pantSize: string;
@@ -230,9 +230,67 @@ export default function App() {
         },
       ];
     });
+  };
 
+  // Cart operations
+  const handleAddToCart = (itemConfig: {
+    product: Product;
+    shirtSize: string;
+    pantSize: string;
+    shirtLength: string;
+    pantLength: string;
+    quantity: number;
+  }) => {
+    upsertCartItem(itemConfig);
     setSelectedProduct(null);
     setIsCartOpen(true);
+  };
+
+  const handleBuyNow = (itemConfig: {
+    product: Product;
+    shirtSize: string;
+    pantSize: string;
+    shirtLength: string;
+    pantLength: string;
+    quantity: number;
+  }) => {
+    upsertCartItem(itemConfig);
+    setSelectedProduct(null);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
+  const getDefaultSizeForCard = (product: Product) => {
+    const sizes = product.availableSizes && product.availableSizes.length > 0
+      ? product.availableSizes
+      : ['XS', 'S', 'M', 'L', 'XL'];
+    return sizes.includes('M') ? 'M' : sizes[0];
+  };
+
+  const handleQuickAddToCart = (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const defaultSize = getDefaultSizeForCard(product);
+    handleAddToCart({
+      product,
+      shirtSize: defaultSize,
+      pantSize: defaultSize,
+      shirtLength: '48(Standard)',
+      pantLength: '36(Standard)',
+      quantity: 1,
+    });
+  };
+
+  const handleQuickBuyNow = (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const defaultSize = getDefaultSizeForCard(product);
+    handleBuyNow({
+      product,
+      shirtSize: defaultSize,
+      pantSize: defaultSize,
+      shirtLength: '48(Standard)',
+      pantLength: '36(Standard)',
+      quantity: 1,
+    });
   };
 
   const handleUpdateQuantity = (cartId: string, quantity: number) => {
@@ -256,9 +314,12 @@ export default function App() {
     );
   };
 
-  // Dynamic navigation categories from database/defaults (always ensure Best Sellers is accessible)
+  // Dynamic navigation categories from database/defaults (always ensure Best Sellers and Sale are accessible)
   const hasBestSellersNav = categories.some(
     (cat) => cat.slug === 'best-sellers' || cat.name.toLowerCase() === 'best sellers'
+  );
+  const hasSaleNav = categories.some(
+    (cat) => cat.slug === 'sale' || cat.name.toLowerCase() === 'sale'
   );
   const navCategoriesList = [
     { label: 'ALL COLLECTIONS', value: 'All' },
@@ -267,6 +328,7 @@ export default function App() {
       value: cat.name,
     })),
     ...(hasBestSellersNav ? [] : [{ label: 'BEST SELLERS', value: 'Best Sellers' }]),
+    ...(hasSaleNav ? [] : [{ label: 'SALE', value: 'Sale' }]),
   ];
 
   const newArrivalsCat = categories.find(
@@ -274,6 +336,9 @@ export default function App() {
   );
   const bestSellersCat = categories.find(
     (c) => c.slug === 'best-sellers' || c.name.toLowerCase() === 'best sellers'
+  );
+  const saleCat = categories.find(
+    (c) => c.slug === 'sale' || c.name.toLowerCase() === 'sale'
   );
   const activeBestSellerIds = new Set(
     bestSellersList
@@ -295,6 +360,13 @@ export default function App() {
       p.category.toLowerCase() === 'best sellers' ||
       (bestSellersCat ? p.categoryIds?.includes(bestSellersCat.id) : false)
   );
+  const saleProducts = products.filter(
+    (p) =>
+      (p.originalPrice !== undefined && p.originalPrice > p.price) ||
+      (p.salePrice !== null && p.salePrice !== undefined && p.salePrice > 0) ||
+      p.category.toLowerCase() === 'sale' ||
+      (saleCat ? p.categoryIds?.includes(saleCat.id) : false)
+  );
 
   const displayedProducts =
     selectedCategory === 'All'
@@ -303,6 +375,8 @@ export default function App() {
       ? newArrivals
       : selectedCategory.toLowerCase() === 'best sellers'
       ? bestSellerProducts
+      : selectedCategory.toLowerCase() === 'sale'
+      ? saleProducts
       : products.filter((p) => {
           const catObj = categories.find(
             (c) => c.name.toLowerCase() === selectedCategory.toLowerCase()
@@ -428,6 +502,8 @@ export default function App() {
                         onSelect={(p) => setSelectedProduct(p)}
                         isWishlisted={wishlistIds.includes(product.id)}
                         onToggleWishlist={handleToggleWishlist}
+                        onQuickAddToCart={handleQuickAddToCart}
+                        onQuickBuyNow={handleQuickBuyNow}
                       />
                     ))}
                   </div>
@@ -507,15 +583,19 @@ export default function App() {
               }}
               onSelectCategory={(cat) => openCollectionView(cat)}
               onSelectProduct={(p) => setSelectedProduct(p)}
+              onQuickAddToCart={handleQuickAddToCart}
+              onQuickBuyNow={handleQuickBuyNow}
             />
 
             {/* Section: CLIENT REVIEWS */}
             <ReviewsSection
               reviews={reviews}
-              products={products}
               fromSupabase={fromSupabase}
               onReviewSubmitted={loadStorefront}
             />
+
+            {/* Section: WEBSITE QR CODE */}
+            <WebsiteQrSection />
           </>
         ) : (
           /* Dedicated Collection Page View */
@@ -559,6 +639,7 @@ export default function App() {
                     'All',
                     ...categories.map((c) => c.name),
                     ...(hasBestSellersNav ? [] : ['Best Sellers']),
+                    ...(hasSaleNav ? [] : ['Sale']),
                   ].map((cat) => (
                     <button
                       key={cat}
@@ -578,10 +659,14 @@ export default function App() {
               {displayedProducts.length === 0 ? (
                 <div className="py-16 px-6 text-center bg-white border border-stone-200">
                   <p className="font-serif text-xl sm:text-2xl text-stone-900">
-                    No Products Listed Yet
+                    {selectedCategory.toLowerCase() === 'sale'
+                      ? 'No Sale Items Active Right Now'
+                      : 'No Products Listed Yet'}
                   </p>
                   <p className="text-xs sm:text-sm text-stone-500 mt-2 max-w-md mx-auto">
-                    Our upcoming collection is being curated. New stitched suits will appear here soon.
+                    {selectedCategory.toLowerCase() === 'sale'
+                      ? 'Any stitched suits with a discounted sale price will appear here automatically.'
+                      : 'Our upcoming collection is being curated. New stitched suits will appear here soon.'}
                   </p>
                 </div>
               ) : (
@@ -597,6 +682,8 @@ export default function App() {
                       onSelect={(p) => setSelectedProduct(p)}
                       isWishlisted={wishlistIds.includes(product.id)}
                       onToggleWishlist={handleToggleWishlist}
+                      onQuickAddToCart={handleQuickAddToCart}
+                      onQuickBuyNow={handleQuickBuyNow}
                     />
                   ))}
                 </div>
@@ -626,6 +713,7 @@ export default function App() {
             product={selectedProduct}
             onClose={() => setSelectedProduct(null)}
             onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
             isWishlisted={wishlistIds.includes(selectedProduct.id)}
             onToggleWishlist={handleToggleWishlist}
             onOpenSizeChart={() => setIsSizeChartOpen(true)}

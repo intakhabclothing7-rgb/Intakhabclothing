@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Eye } from 'lucide-react';
+import { Heart, Eye, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
@@ -7,6 +7,8 @@ interface ProductCardProps {
   onSelect: (product: Product) => void;
   isWishlisted: boolean;
   onToggleWishlist: (productId: string, e: React.MouseEvent) => void;
+  onQuickAddToCart?: (product: Product, e: React.MouseEvent) => void;
+  onQuickBuyNow?: (product: Product, e: React.MouseEvent) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -14,6 +16,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onSelect,
   isWishlisted,
   onToggleWishlist,
+  onQuickAddToCart,
+  onQuickBuyNow,
 }) => {
   return (
     <div
@@ -59,21 +63,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </button>
 
         {/* Quick View Hover Bar */}
-        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <div className="hidden sm:flex absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center">
           <span className="w-full py-2 bg-white/95 text-stone-900 text-[11px] font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-sm hover:bg-[#EDE1C8] hover:text-black transition-colors border border-transparent hover:border-[#D8C7A5]">
             <Eye className="w-3.5 h-3.5" />
-            <span>Select Options</span>
+            <span>View Details</span>
           </span>
         </div>
       </div>
 
       {/* Product Info */}
-      <div className="p-4 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
           <span className="text-[10px] uppercase tracking-wider text-stone-400 block mb-1">
             {product.category}
           </span>
-          <h3 className="font-serif text-base sm:text-lg text-stone-900 font-medium group-hover:text-black transition-colors leading-snug">
+          <h3 className="font-serif text-sm sm:text-lg text-stone-900 font-medium group-hover:text-black transition-colors leading-snug">
             {product.name}
           </h3>
           {product.urduName && (
@@ -83,20 +87,55 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        <div className="mt-3 pt-2 border-t border-stone-100 flex items-baseline justify-between gap-2">
-          <div className="flex items-baseline gap-1.5 flex-wrap">
-            <p className="font-medium text-sm sm:text-base text-stone-900 tabular-nums">
-              Rs.{product.price.toLocaleString('en-PK')}
-            </p>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-xs text-stone-400 line-through tabular-nums">
-                Rs.{product.originalPrice.toLocaleString('en-PK')}
-              </span>
-            )}
+        <div className="mt-3 pt-2 border-t border-stone-100 space-y-2.5">
+          <div className="flex items-baseline justify-between gap-2">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <p className="font-medium text-sm sm:text-base text-stone-900 tabular-nums">
+                Rs.{product.price.toLocaleString('en-PK')}
+              </p>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <span className="text-xs text-stone-400 line-through tabular-nums">
+                  Rs.{product.originalPrice.toLocaleString('en-PK')}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] sm:text-[11px] text-stone-500 font-light whitespace-nowrap">
+              {product.inStock ? 'Custom Lengths' : 'Sold Out'}
+            </span>
           </div>
-          <span className="text-[11px] text-stone-500 font-light">
-            {product.inStock ? 'Custom Lengths' : 'Sold Out'}
-          </span>
+
+          {(onQuickAddToCart || onQuickBuyNow) && (
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+              {onQuickAddToCart && (
+                <button
+                  type="button"
+                  disabled={!product.inStock}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (product.inStock) onQuickAddToCart(product, e);
+                  }}
+                  className="min-h-[38px] px-2 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-900 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ShoppingBag className="w-3 h-3 shrink-0 hidden sm:inline" />
+                  <span>Add to Cart</span>
+                </button>
+              )}
+
+              {onQuickBuyNow && (
+                <button
+                  type="button"
+                  disabled={!product.inStock}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (product.inStock) onQuickBuyNow(product, e);
+                  }}
+                  className="min-h-[38px] px-2 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-colors flex items-center justify-center whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {product.inStock ? 'Buy Now' : 'Sold Out'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

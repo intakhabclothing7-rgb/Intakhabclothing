@@ -33,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
           { label: 'ALL COLLECTIONS', value: 'All' },
           { label: 'NEW ARRIVALS', value: 'New Arrivals' },
           { label: 'BEST SELLERS', value: 'Best Sellers' },
+          { label: 'SALE', value: 'Sale' },
         ];
 
   return (
@@ -121,14 +122,16 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Desktop Category Navigation */}
-        <nav className="hidden md:flex items-center justify-center gap-8 py-3 border-t border-stone-100 text-xs tracking-widest font-medium uppercase text-stone-600">
+        <nav className="hidden md:flex items-center justify-center flex-wrap gap-6 lg:gap-8 py-3 border-t border-stone-100 text-xs tracking-widest font-medium uppercase text-stone-600">
           {categories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => onSelectCategory(cat.value)}
-              className={`transition-colors py-1 relative ${
+              className={`transition-colors py-1 relative whitespace-nowrap shrink-0 cursor-pointer ${
                 selectedCategory === cat.value
                   ? 'text-black font-semibold'
+                  : cat.value.toLowerCase() === 'sale'
+                  ? 'text-rose-700 hover:text-rose-900 font-semibold'
                   : 'hover:text-black'
               }`}
             >
@@ -140,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
           ))}
           <a
             href="#contact"
-            className="hover:text-black transition-colors py-1"
+            className="hover:text-black transition-colors py-1 whitespace-nowrap shrink-0"
           >
             CONTACT US
           </a>

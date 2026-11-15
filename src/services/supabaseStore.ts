@@ -105,6 +105,7 @@ function mapProductRow(
     features: Array.isArray(row.features) ? row.features : [],
     careInstructions: Array.isArray(row.care_instructions) ? row.care_instructions : [],
     images: images.length > 0 ? images : [],
+    videoUrl: row.video_url || '',
     isBestSeller: Boolean(row.is_best_seller),
     isNewArrival: Boolean(row.is_new_arrival),
     isFeatured: Boolean(row.is_featured),
@@ -1065,14 +1066,16 @@ export async function saveAdminProduct(input: {
   isBestSeller: boolean;
   displayOrder: number;
   images: string[];
+  videoUrl?: string;
 }): Promise<string> {
   const client = requireClient();
   const cleanSlug = slugify(input.slug || input.name) || `product-${Date.now()}`;
+  const cleanVideoUrl = input.videoUrl?.trim() || '';
   const effectiveIsBestSeller = Boolean(
     input.isBestSeller || input.category.trim().toLowerCase() === 'best sellers'
   );
 
-  const payload = {
+  const basePayload = {
     name: input.name.trim(),
     urdu_name: input.urduName?.trim() || '',
     slug: cleanSlug,
@@ -1097,10 +1100,32 @@ export async function saveAdminProduct(input: {
     display_order: Number(input.displayOrder),
   };
 
+  const payloadWithVideo = {
+    ...basePayload,
+    video_url: cleanVideoUrl,
+  };
+
+  const isMissingVideoColumnErr = (err: { code?: string; message?: string } | null | undefined) => {
+    if (!err) return false;
+    const msg = (err.message || '').toLowerCase();
+    return (
+      msg.includes('video_url') &&
+      (err.code === '42703' || err.code === 'PGRST204' || msg.includes('column') || msg.includes('schema cache'))
+    );
+  };
+
   let productId = input.id;
 
   if (productId) {
-    const { error } = await client.from('products').update(payload).eq('id', productId);
+    let { error } = await client.from('products').update(payloadWithVideo).eq('id', productId);
+    if (error && isMissingVideoColumnErr(error)) {
+      if (cleanVideoUrl) {
+        throw new Error(
+          'Database column products.video_url is not created yet. Run migration 004_add_product_video_url.sql in Supabase SQL Editor and try again.'
+        );
+      }
+      ({ error } = await client.from('products').update(basePayload).eq('id', productId));
+    }
     if (error) {
       if (error.code === '23505') {
         throw new Error('A product with this SKU or URL slug already exists. Please use a unique SKU and URL slug.');
@@ -1108,7 +1133,15 @@ export async function saveAdminProduct(input: {
       throw new Error(error.message);
     }
   } else {
-    const { data, error } = await client.from('products').insert(payload).select('id').single();
+    let { data, error } = await client.from('products').insert(payloadWithVideo).select('id').single();
+    if (error && isMissingVideoColumnErr(error)) {
+      if (cleanVideoUrl) {
+        throw new Error(
+          'Database column products.video_url is not created yet. Run migration 004_add_product_video_url.sql in Supabase SQL Editor and try again.'
+        );
+      }
+      ({ data, error } = await client.from('products').insert(basePayload).select('id').single());
+    }
     if (error || !data) {
       if (error?.code === '23505') {
         throw new Error('A product with this SKU or URL slug already exists. Please use a unique SKU and URL slug.');
