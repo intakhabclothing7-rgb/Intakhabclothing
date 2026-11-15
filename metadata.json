@@ -1,0 +1,6 @@
+{
+  "name": "Intakhab - Premium Stitched Suits",
+  "description": "Intakhab (انتخاب) luxury prêt wear and premium stitched suits in signature silks, velvet accents, and rich seasonal palettes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
