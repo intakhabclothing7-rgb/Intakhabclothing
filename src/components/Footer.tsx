@@ -6,7 +6,6 @@ import {
   Phone,
   Clock,
   Instagram,
-  CheckCircle2,
   ShieldCheck,
 } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppIcon';
@@ -22,8 +21,6 @@ export const Footer: React.FC<FooterProps> = ({
   settings = DEFAULT_WEBSITE_SETTINGS,
   onOpenAdmin,
 }) => {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const [isPoliciesOpen, setIsPoliciesOpen] = useState(false);
 
   const cleanWaDigits = (settings.whatsappNumber || '+92 325 6253921').replace(/[^0-9]/g, '') || '923256253921';
@@ -31,14 +28,6 @@ export const Footer: React.FC<FooterProps> = ({
     .split('✦')
     .map((item) => item.trim())
     .filter(Boolean);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setIsSubscribed(true);
-      setEmail('');
-    }
-  };
 
   return (
     <footer id="contact" className="bg-white border-t border-stone-200 text-stone-800">
@@ -73,10 +62,10 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         </div>
 
-        {/* 3 Column Grid */}
+        {/* 2 Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           {/* Column 1: CONTACT US */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="md:col-span-6 space-y-4">
             <h3 className="font-bold text-xs uppercase tracking-widest text-stone-900 border-b border-stone-100 pb-2">
               CONTACT US
             </h3>
@@ -142,7 +131,7 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Column 2: OUR POLICIES */}
-          <div className="md:col-span-3 space-y-4">
+          <div className="md:col-span-6 space-y-4">
             <div>
               <button
                 onClick={() => setIsPoliciesOpen(!isPoliciesOpen)}
@@ -175,41 +164,6 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* Column 3: FOLLOW THE LATEST TRENDS AND STYLES */}
-          <div className="md:col-span-4 space-y-4">
-            <h3 className="font-bold text-xs uppercase tracking-widest text-stone-900 border-b border-stone-100 pb-2">
-              FOLLOW THE LATEST TRENDS AND STYLES
-            </h3>
-
-            <p className="text-xs text-stone-600">
-              Be the first to access new drops, velvet capsules, and VIP previews.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                className="w-full py-3 px-3.5 text-xs bg-white border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5] text-stone-900 placeholder:text-stone-400"
-              />
-
-              <button
-                type="submit"
-                className="w-full sm:w-36 py-3 px-6 bg-black hover:bg-[#EDE1C8] hover:text-black text-white text-xs font-semibold tracking-widest uppercase transition-colors rounded-none shadow-sm"
-              >
-                SUBSCRIBE
-              </button>
-            </form>
-
-            {isSubscribed && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Thank you for joining Intakhab VIP updates!</span>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Bottom Bar */}
