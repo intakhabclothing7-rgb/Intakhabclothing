@@ -103,11 +103,17 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   className="py-3 flex items-center justify-between gap-4 hover:bg-[#FAF6F2] px-2 -mx-2 transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3">
-                    <img
-                      src={prod.images[0]}
-                      alt={prod.name}
-                      className="w-12 h-16 object-cover object-top border border-stone-200"
-                    />
+                    {prod.images[0] ? (
+                      <img
+                        src={prod.images[0]}
+                        alt={prod.name}
+                        className="w-12 h-16 object-cover object-top border border-stone-200"
+                      />
+                    ) : (
+                      <div className="w-12 h-16 bg-stone-100 border border-stone-200 flex items-center justify-center text-[8px] text-stone-400 uppercase tracking-widest shrink-0">
+                        Intakhab
+                      </div>
+                    )}
                     <div>
                       <h4 className="font-serif text-sm font-semibold text-stone-900 group-hover:text-black transition-colors">
                         {prod.name}

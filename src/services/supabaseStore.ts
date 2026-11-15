@@ -311,22 +311,22 @@ export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
         .order('created_at', { ascending: false }),
       supabase.from('homepage_content').select('*'),
       supabase
+        .from('website_settings')
+        .select(
+          'store_name, delivery_fee, delivery_time_text, whatsapp_number, instagram_url, bank_title, bank_name, bank_account_number, jazzcash_number, jazzcash_name, announcement_text, hero_transition_ms, best_sellers_limit'
+        )
+        .eq('id', 1)
+        .maybeSingle(),
+    ]);
+
+    let finalSettingsRes = settingsRes;
+    if (settingsRes.error?.code === '42501' || settingsRes.error?.code === '42P01') {
+      finalSettingsRes = await supabase
         .from('public_store_settings')
         .select(
           'store_name, delivery_fee, delivery_time_text, whatsapp_number, instagram_url, announcement_text, hero_transition_ms, best_sellers_limit'
         )
         .limit(1)
-        .maybeSingle(),
-    ]);
-
-    let finalSettingsRes = settingsRes;
-    if (settingsRes.error?.code === '42P01') {
-      finalSettingsRes = await supabase
-        .from('website_settings')
-        .select(
-          'store_name, delivery_fee, delivery_time_text, whatsapp_number, instagram_url, announcement_text, hero_transition_ms, best_sellers_limit'
-        )
-        .eq('id', 1)
         .maybeSingle();
     }
 
@@ -1062,21 +1062,32 @@ export async function saveAdminProduct(input: {
 
   if (productId) {
     const { error } = await client.from('products').update(payload).eq('id', productId);
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('A product with this SKU or URL slug already exists. Please use a unique SKU and URL slug.');
+      }
+      throw new Error(error.message);
+    }
   } else {
     const { data, error } = await client.from('products').insert(payload).select('id').single();
-    if (error || !data) throw new Error(error?.message || 'Failed to create product.');
+    if (error || !data) {
+      if (error?.code === '23505') {
+        throw new Error('A product with this SKU or URL slug already exists. Please use a unique SKU and URL slug.');
+      }
+      throw new Error(error?.message || 'Failed to create product.');
+    }
     productId = data.id;
   }
 
   // Sync product_images
+  const cleanImages = input.images.map((u) => u.trim()).filter(Boolean);
   const { error: delImgErr } = await client.from('product_images').delete().eq('product_id', productId);
   if (delImgErr) throw new Error(delImgErr.message);
-  if (input.images.length > 0) {
-    const imageRows = input.images.map((url, idx) => ({
+  if (cleanImages.length > 0) {
+    const imageRows = cleanImages.map((url, idx) => ({
       product_id: productId,
       image_url: url,
-      alt_text: input.name,
+      alt_text: input.name.trim(),
       display_order: idx,
       is_primary: idx === 0,
     }));
@@ -1099,13 +1110,17 @@ export async function saveAdminProduct(input: {
   }
 
   // Sync best_sellers toggle cleanly
+  const displayPrice =
+    input.salePrice && input.salePrice > 0 && input.salePrice < input.price
+      ? input.salePrice
+      : input.price;
   if (effectiveIsBestSeller) {
     const { error: bsUpsertErr } = await client.from('best_sellers').upsert(
       {
         product_id: productId,
-        custom_title: input.name.toUpperCase(),
-        custom_subtitle: `${input.material} — Rs.${input.price.toLocaleString('en-PK')}`,
-        custom_image_url: input.images[0] || '',
+        custom_title: input.name.trim().toUpperCase(),
+        custom_subtitle: `${input.material.trim()} — Rs.${displayPrice.toLocaleString('en-PK')}`,
+        custom_image_url: cleanImages[0] || '',
         display_order: input.displayOrder,
         is_active: true,
       },

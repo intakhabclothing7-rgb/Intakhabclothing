@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plus,
   Trash2,
@@ -44,6 +44,10 @@ export const BestSellersPanel: React.FC<BestSellersPanelProps> = ({
   const [isAdding, setIsAdding] = useState(false);
   const [editingEntry, setEditingEntry] = useState<BestSellerEntry | null>(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  useEffect(() => {
+    setLimit(String(settings.bestSellersLimit || 6));
+  }, [settings.bestSellersLimit]);
 
   const availableToAdd = products.filter(
     (p) => !entries.some((e) => e.productId === p.id)

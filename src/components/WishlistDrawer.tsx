@@ -79,11 +79,17 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({
                     }}
                     className="w-20 h-26 bg-stone-100 shrink-0 border border-stone-200 overflow-hidden cursor-pointer"
                   >
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover object-top hover:scale-105 transition-transform"
-                    />
+                    {product.images[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-full h-full object-cover object-top hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[9px] text-stone-400 uppercase tracking-widest">
+                        Intakhab
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 space-y-1 text-xs">

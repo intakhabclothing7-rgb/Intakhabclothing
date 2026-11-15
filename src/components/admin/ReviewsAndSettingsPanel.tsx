@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Star,
   Search,
@@ -508,6 +508,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const [form, setForm] = useState<WebsiteSettings>(settings);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setForm(settings);
+  }, [settings]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

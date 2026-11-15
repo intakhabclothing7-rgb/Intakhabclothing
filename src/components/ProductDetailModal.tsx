@@ -152,11 +152,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             {/* Left Column: Image Gallery (Screenshot 12) */}
             <div className="md:col-span-6 space-y-4">
               <div className="relative aspect-[3/4] bg-stone-100 overflow-hidden border border-stone-200">
-                <img
-                  src={product.images[activeImageIndex] || product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover object-top"
-                />
+                {product.images[activeImageIndex] || product.images[0] ? (
+                  <img
+                    src={product.images[activeImageIndex] || product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs text-stone-400 uppercase tracking-widest">
+                    Intakhab
+                  </div>
+                )}
 
                 {/* Left / Right Nav Arrows */}
                 {product.images.length > 1 && (
@@ -452,31 +458,41 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </button>
                   {openAccordion.details && (
                     <div className="p-4 bg-white text-xs text-stone-700 space-y-3 border-x border-b border-stone-200">
-                      <div className="grid grid-cols-2 gap-2 pb-2 border-b border-stone-100">
-                        <div>
-                          <span className="font-semibold text-stone-900">Material: </span>
-                          <span>{product.material}</span>
+                      {(product.material || product.colour || product.modelSpecs) && (
+                        <div className="grid grid-cols-2 gap-2 pb-2 border-b border-stone-100">
+                          {product.material && (
+                            <div>
+                              <span className="font-semibold text-stone-900">Material: </span>
+                              <span>{product.material}</span>
+                            </div>
+                          )}
+                          {product.colour && (
+                            <div>
+                              <span className="font-semibold text-stone-900">Colour: </span>
+                              <span>{product.colour}</span>
+                            </div>
+                          )}
+                          {product.modelSpecs && (
+                            <div className="col-span-2">
+                              <span className="font-semibold text-stone-900">Model: </span>
+                              <span>{product.modelSpecs}</span>
+                            </div>
+                          )}
                         </div>
-                        <div>
-                          <span className="font-semibold text-stone-900">Colour: </span>
-                          <span>{product.colour}</span>
-                        </div>
-                        <div className="col-span-2">
-                          <span className="font-semibold text-stone-900">Model: </span>
-                          <span>{product.modelSpecs}</span>
-                        </div>
-                      </div>
+                      )}
 
-                      <p className="leading-relaxed">{product.description}</p>
+                      {product.description && <p className="leading-relaxed">{product.description}</p>}
 
-                      <div className="space-y-1.5 pt-1">
-                        <span className="font-semibold text-stone-900 block">Garment Features:</span>
-                        <ul className="list-disc pl-4 space-y-1 text-stone-600">
-                          {product.features.map((feat, i) => (
-                            <li key={i}>{feat}</li>
-                          ))}
-                        </ul>
-                      </div>
+                      {product.features && product.features.length > 0 && (
+                        <div className="space-y-1.5 pt-1">
+                          <span className="font-semibold text-stone-900 block">Garment Features:</span>
+                          <ul className="list-disc pl-4 space-y-1 text-stone-600">
+                            {product.features.map((feat, i) => (
+                              <li key={i}>{feat}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -524,11 +540,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </button>
                   {openAccordion.care && (
                     <div className="p-4 bg-[#FAF6F2] text-xs text-stone-700 space-y-1.5 border-t border-stone-200">
-                      <ul className="list-disc pl-4 space-y-1 text-stone-600">
-                        {product.careInstructions.map((care, i) => (
-                          <li key={i}>{care}</li>
-                        ))}
-                      </ul>
+                      {product.careInstructions && product.careInstructions.length > 0 ? (
+                        <ul className="list-disc pl-4 space-y-1 text-stone-600">
+                          {product.careInstructions.map((care, i) => (
+                            <li key={i}>{care}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-stone-600">Dry clean or gentle cold wash recommended.</p>
+                      )}
                     </div>
                   )}
                 </div>

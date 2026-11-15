@@ -55,6 +55,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const cleanWaDigits = (settings.whatsappNumber || '+92 325 6253921').replace(/[^0-9]/g, '') || '923256253921';
   const deliveryTimeText = settings.deliveryTimeText || '5–7 working days';
 
+  const bankTitle = settings.bankTitle || DEFAULT_WEBSITE_SETTINGS.bankTitle;
+  const bankName = settings.bankName || DEFAULT_WEBSITE_SETTINGS.bankName;
+  const bankAccountNumber =
+    settings.bankAccountNumber || DEFAULT_WEBSITE_SETTINGS.bankAccountNumber;
+  const jazzcashName = settings.jazzcashName || DEFAULT_WEBSITE_SETTINGS.jazzcashName;
+  const jazzcashNumber = settings.jazzcashNumber || DEFAULT_WEBSITE_SETTINGS.jazzcashNumber;
+  const whatsappDisplay = settings.whatsappNumber || DEFAULT_WEBSITE_SETTINGS.whatsappNumber;
+
   const majorCities = [
     'Lahore',
     'Karachi',
@@ -71,7 +79,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || items.length === 0) return;
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -473,21 +481,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         <span className="text-[10px] uppercase tracking-wider text-stone-500 block">
                           ACCOUNT TITLE:
                         </span>
-                        <span className="font-bold text-stone-950">THE FRAGRANCES POINT</span>
+                        <span className="font-bold text-stone-950">{bankTitle}</span>
                       </div>
 
                       <div className="flex items-center justify-between gap-2 bg-white px-3 py-2 border border-stone-200">
                         <div>
                           <span className="text-[10px] uppercase tracking-wider text-stone-500 block">
-                            ACCOUNT NUMBER (UNITED BANK LTD UBL):
+                            ACCOUNT NUMBER ({bankName}):
                           </span>
                           <span className="font-mono font-bold text-stone-950 select-all">
-                            2211367921909
+                            {bankAccountNumber}
                           </span>
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleCopy('ubl', '2211367921909')}
+                          onClick={() => handleCopy('ubl', bankAccountNumber)}
                           className="px-2.5 py-1 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black text-[10px] font-semibold uppercase tracking-wider border border-[#D8C7A5] flex items-center gap-1 shrink-0"
                         >
                           {copiedField === 'ubl' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -498,15 +506,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       <div className="flex items-center justify-between gap-2 bg-white px-3 py-2 border border-stone-200">
                         <div>
                           <span className="text-[10px] uppercase tracking-wider text-stone-500 block">
-                            JAZZCASH ({'mazz al rehman'}):
+                            JAZZCASH ({jazzcashName}):
                           </span>
                           <span className="font-mono font-bold text-stone-950 select-all">
-                            03086293355
+                            {jazzcashNumber}
                           </span>
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleCopy('jazzcash', '03086293355')}
+                          onClick={() => handleCopy('jazzcash', jazzcashNumber)}
                           className="px-2.5 py-1 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black text-[10px] font-semibold uppercase tracking-wider border border-[#D8C7A5] flex items-center gap-1 shrink-0"
                         >
                           {copiedField === 'jazzcash' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -518,10 +526,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <div className="pt-2 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <p className="text-[11px] text-stone-700 leading-relaxed">
                         After placing order, send screenshot to WhatsApp{' '}
-                        <strong className="text-black">+92 3256253921</strong> for immediate dispatch.
+                        <strong className="text-black">{whatsappDisplay}</strong> for immediate dispatch.
                       </p>
                       <a
-                        href={`https://wa.me/923256253921?text=${encodeURIComponent(`Assalam o Alaikum! I am transferring Rs.${total.toLocaleString('en-PK')} for my Intakhab order and will share the payment screenshot here.`)}`}
+                        href={`https://wa.me/${cleanWaDigits}?text=${encodeURIComponent(`Assalam o Alaikum! I am transferring Rs.${total.toLocaleString('en-PK')} for my Intakhab order and will share the payment screenshot here.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] font-semibold shrink-0 transition-colors"
@@ -538,8 +546,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-md flex items-center justify-center gap-2 border border-[#D8C7A5]"
+                  disabled={isSubmitting || items.length === 0}
+                  className="w-full py-4 bg-[#EDE1C8] hover:bg-[#dfd0b2] disabled:opacity-60 text-black text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-md flex items-center justify-center gap-2 border border-[#D8C7A5]"
                 >
                   {isSubmitting ? (
                     <span>CONFIRMING ORDER...</span>

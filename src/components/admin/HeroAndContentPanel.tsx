@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Plus,
   Pencil,
@@ -585,6 +585,10 @@ export const WebsiteContentPanel: React.FC<WebsiteContentPanelProps> = ({
 }) => {
   const [sections, setSections] = useState<Record<string, HomepageContentSection>>(contentMap);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSections(contentMap);
+  }, [contentMap]);
 
   const sectionDefs: { key: string; title: string; hasImage?: boolean }[] = [
     { key: 'new_arrivals_header', title: 'New Arrivals Section Header' },

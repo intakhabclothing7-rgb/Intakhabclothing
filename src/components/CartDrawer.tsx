@@ -95,11 +95,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               {items.map((item) => (
                 <div key={item.cartId} className="pt-4 first:pt-0 flex gap-4 items-start">
                   <div className="w-20 h-26 bg-stone-100 shrink-0 border border-stone-200 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover object-top"
-                    />
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[9px] text-stone-400 uppercase tracking-widest">
+                        Intakhab
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 space-y-1 text-xs">

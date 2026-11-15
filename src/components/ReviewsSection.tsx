@@ -80,6 +80,15 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    if (
+      selectedProductId &&
+      !availableProducts.some((p) => p.id === selectedProductId)
+    ) {
+      setSelectedProductId(availableProducts[0]?.id || '');
+    }
+  }, [availableProducts, selectedProductId]);
+
+  useEffect(() => {
     if (fromSupabase) return;
     try {
       const persistable = reviews.map((rev) => ({
@@ -129,7 +138,13 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   };
 
   const handleRemoveMedia = (id: string) => {
-    setAttachedMedia((prev) => prev.filter((m) => m.id !== id));
+    setAttachedMedia((prev) => {
+      const target = prev.find((m) => m.id === id);
+      if (target?.url.startsWith('blob:')) {
+        URL.revokeObjectURL(target.url);
+      }
+      return prev.filter((m) => m.id !== id);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
