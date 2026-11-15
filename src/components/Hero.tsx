@@ -46,8 +46,8 @@ export const Hero: React.FC<HeroProps> = ({
 
   return (
     <section className="relative w-full overflow-hidden bg-[#16040A] border-b border-stone-200">
-      {/* Full length portrait hero container */}
-      <div className="relative w-full min-h-[740px] sm:min-h-[840px] md:min-h-[920px] lg:min-h-[980px] flex flex-col justify-end items-center">
+      {/* Compact portrait hero container */}
+      <div className="relative w-full min-h-[490px] sm:min-h-[560px] md:min-h-[620px] lg:min-h-[660px] flex flex-col justify-end items-center">
         {/* Background full-length rotating images (incrementally mounted for fast LCP) */}
         {activeSlides.map((slide, index) => {
           if (!mountedIndices.includes(index)) return null;
@@ -85,29 +85,29 @@ export const Hero: React.FC<HeroProps> = ({
         })}
 
         {/* Top subtle vignette for clean header transition */}
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-stone-950/40 via-stone-950/15 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-stone-950/35 via-stone-950/10 to-transparent pointer-events-none" />
 
-        {/* Luxury gradient overlay so text is clearly readable in the lower section */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#140207] via-[#140207]/70 via-40% to-transparent pointer-events-none" />
+        {/* Luxury gradient overlay so text is clearly readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#140207] via-[#140207]/70 via-55% to-transparent pointer-events-none" />
 
-        {/* Content positioned towards the lower part */}
-        <div className="relative z-10 max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14 pt-48 sm:pt-64 text-center">
-          <div className="space-y-4 sm:space-y-5">
+        {/* Content positioned neatly above bottom edge */}
+        <div className="relative z-10 max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-9 pt-28 sm:pt-36 md:pt-40 text-center">
+          <div className="space-y-3 sm:space-y-4">
             {/* Tag / Badge */}
             {currentSlide?.badgeText && (
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#EDE1C8] border border-[#D8C7A5] rounded-full text-xs font-semibold text-black tracking-widest uppercase shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#EDE1C8] border border-[#D8C7A5] rounded-full text-[11px] sm:text-xs font-semibold text-black tracking-widest uppercase shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-stone-800" />
                 <span>{currentSlide.badgeText}</span>
               </div>
             )}
 
             {/* Headings */}
-            <div className="space-y-2">
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-medium leading-[1.15] tracking-tight drop-shadow-md">
+            <div className="space-y-1.5">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-medium leading-[1.12] tracking-tight drop-shadow-md">
                 {currentSlide?.title || 'Elegance in Every Stitch'}
               </h1>
               {currentSlide?.urduSubtitle && (
-                <p className="font-serif text-lg sm:text-xl md:text-2xl text-[#EDE1C8] tracking-wide drop-shadow">
+                <p className="font-serif text-base sm:text-xl md:text-2xl text-[#EDE1C8] tracking-wide drop-shadow">
                   {currentSlide.urduSubtitle}
                 </p>
               )}
@@ -115,16 +115,16 @@ export const Hero: React.FC<HeroProps> = ({
 
             {/* Description */}
             {currentSlide?.description && (
-              <p className="text-sm sm:text-base text-stone-200 leading-relaxed max-w-xl mx-auto drop-shadow">
+              <p className="text-xs sm:text-base text-stone-200 leading-relaxed max-w-xl mx-auto drop-shadow">
                 {currentSlide.description}
               </p>
             )}
 
             {/* Call To Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-3 max-w-md mx-auto sm:max-w-none">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 pt-1.5 max-w-md mx-auto sm:max-w-none">
               <button
                 onClick={() => onExploreClick(currentSlide?.ctaPrimaryLink)}
-                className="w-full sm:w-auto px-8 py-3.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black text-xs uppercase tracking-widest font-semibold transition-all duration-200 shadow-xl flex items-center justify-center gap-2 group border border-[#D8C7A5] cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black text-xs uppercase tracking-widest font-semibold transition-all duration-200 shadow-xl flex items-center justify-center gap-2 group border border-[#D8C7A5] cursor-pointer"
               >
                 <span>{currentSlide?.ctaPrimaryText || 'SHOP THE COLLECTION'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 text-black" />
@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({
               {currentSlide?.ctaSecondaryText && (
                 <button
                   onClick={() => onBestSellersClick(currentSlide?.ctaSecondaryLink)}
-                  className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md text-xs uppercase tracking-widest font-semibold transition-all duration-200 border border-white/40 hover:border-white shadow-lg cursor-pointer"
+                  className="w-full sm:w-auto px-8 py-3 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md text-xs uppercase tracking-widest font-semibold transition-all duration-200 border border-white/40 hover:border-white shadow-lg cursor-pointer"
                 >
                   {currentSlide.ctaSecondaryText}
                 </button>
