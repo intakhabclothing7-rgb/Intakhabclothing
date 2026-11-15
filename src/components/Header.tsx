@@ -78,6 +78,8 @@ export const Header: React.FC<HeaderProps> = ({
               <img
                 src="/assets/intakhab_calligraphy_logo.png"
                 alt="Intakhab - انتخاب"
+                decoding="async"
+                fetchPriority="high"
                 className="h-11 sm:h-13 md:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </a>

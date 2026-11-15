@@ -583,6 +583,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                         <img
                           src={item.url}
                           alt={`Review photo by ${review.customerName}`}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                       </button>
@@ -595,6 +597,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                           src={item.url}
                           controls
                           playsInline
+                          preload="metadata"
                           className="w-full h-36 object-cover"
                         />
                       </div>

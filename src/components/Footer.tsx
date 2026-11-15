@@ -50,6 +50,8 @@ export const Footer: React.FC<FooterProps> = ({
             <img
               src="/assets/intakhab_calligraphy_logo.png"
               alt="Intakhab - انتخاب"
+              loading="lazy"
+              decoding="async"
               className="h-14 sm:h-16 w-auto object-contain mx-auto sm:mx-0"
             />
             <p className="font-serif text-xs text-stone-500 mt-2 tracking-widest uppercase">

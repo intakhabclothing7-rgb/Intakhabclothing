@@ -6,12 +6,12 @@ import {
   BestSellerEntry,
 } from '../types';
 import { PRODUCTS } from './products';
-import heroPortraitImg1 from '../assets/images/hero_portrait_model.png';
-import heroPortraitImg2 from '../assets/images/hero_portrait_model_2.png';
-import heroPortraitImg3 from '../assets/images/hero_portrait_model_3.png';
-import heroPortraitImg4 from '../assets/images/hero_portrait_model_4.png';
-import heroPortraitImg5 from '../assets/images/hero_portrait_model_5.png';
-import gulzarFestiveImg from '../assets/images/gulzar_festive_boutique.png';
+import heroPortraitImg1 from '../assets/images/hero_portrait_model.webp';
+import heroPortraitImg2 from '../assets/images/hero_portrait_model_2.webp';
+import heroPortraitImg3 from '../assets/images/hero_portrait_model_3.webp';
+import heroPortraitImg4 from '../assets/images/hero_portrait_model_4.webp';
+import heroPortraitImg5 from '../assets/images/hero_portrait_model_5.webp';
+import gulzarFestiveImg from '../assets/images/gulzar_festive_boutique.webp';
 import wa0049 from '../assets/images/IMG-20261112-WA0049.jpg';
 import wa0053 from '../assets/images/IMG-20261112-WA0053.jpg';
 import wa0058 from '../assets/images/IMG-20261112-WA0058.jpg';

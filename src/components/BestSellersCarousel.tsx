@@ -21,6 +21,9 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
 }) => {
   const slides = entries.filter((e) => e.isActive !== false && (e.customImageUrl || e.product?.images?.[0]));
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [mountedIndices, setMountedIndices] = useState<number[]>(() =>
+    slides.length > 1 ? [0, 1] : [0]
+  );
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -30,6 +33,16 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
       setCurrentIndex(0);
     }
   }, [slides.length, currentIndex]);
+
+  useEffect(() => {
+    if (slides.length === 0) return;
+    const nextIdx = (currentIndex + 1) % slides.length;
+    setMountedIndices((prev) =>
+      prev.includes(currentIndex) && prev.includes(nextIdx)
+        ? prev
+        : Array.from(new Set([...prev, currentIndex, nextIdx]))
+    );
+  }, [currentIndex, slides.length]);
 
   useEffect(() => {
     if (isPaused || slides.length <= 1) return;
@@ -130,6 +143,7 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
             >
               <div className="w-full h-full relative overflow-hidden">
                 {slides.map((slide, idx) => {
+                  if (!mountedIndices.includes(idx)) return null;
                   const imgSrc = slide.customImageUrl || slide.product?.images?.[0] || '';
                   const title = slide.customTitle || slide.product?.name || 'Best Seller';
                   return (
@@ -144,6 +158,7 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
                         alt={title}
                         className="w-full h-full object-cover object-top"
                         loading="lazy"
+                        decoding="async"
                       />
                     </div>
                   );

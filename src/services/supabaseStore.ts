@@ -246,6 +246,39 @@ export async function verifyCategoriesConnection(): Promise<{
   };
 }
 
+const STOREFRONT_CACHE_KEY = 'intakhab_storefront_cache_v1';
+const STOREFRONT_CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
+
+export function getCachedStorefrontSnapshot(): StorefrontSnapshot | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(STOREFRONT_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { ts?: number; data?: StorefrontSnapshot };
+    if (!parsed?.data || !parsed.ts || Date.now() - parsed.ts > STOREFRONT_CACHE_TTL_MS) {
+      return null;
+    }
+    if (!Array.isArray(parsed.data.products) || !Array.isArray(parsed.data.categories)) {
+      return null;
+    }
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedStorefrontSnapshot(snapshot: StorefrontSnapshot): void {
+  if (typeof window === 'undefined' || !snapshot.fromSupabase) return;
+  try {
+    window.localStorage.setItem(
+      STOREFRONT_CACHE_KEY,
+      JSON.stringify({ ts: Date.now(), data: snapshot })
+    );
+  } catch {
+    // Ignore storage quota / private mode errors
+  }
+}
+
 export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
   if (!supabase || !isSupabaseConfigured) {
     return {
@@ -551,7 +584,7 @@ export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
       Boolean(productsRes.error) &&
       Boolean(finalSettingsRes.error);
 
-    return {
+    const snapshot: StorefrontSnapshot = {
       products,
       categories,
       heroSlides,
@@ -565,6 +598,12 @@ export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
           ? `Supabase connection/permission error: ${queryErrors.join('; ')}`
           : null,
     };
+
+    if (snapshot.fromSupabase && queryErrors.length === 0) {
+      saveCachedStorefrontSnapshot(snapshot);
+    }
+
+    return snapshot;
   } catch (err: any) {
     const message =
       err?.message || 'Unable to connect to Supabase. Check VITE_SUPABASE_URL, key, and network.';

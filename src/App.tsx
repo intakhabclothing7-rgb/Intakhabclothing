@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useCallback } from 'react';
 import { PRODUCTS as DEFAULT_PRODUCTS } from './data/products';
 import { INITIAL_REVIEWS } from './data/reviews';
 import {
@@ -19,40 +19,73 @@ import {
   HomepageContentSection,
   WebsiteSettings,
 } from './types';
-import { fetchStorefrontSnapshot } from './services/supabaseStore';
+import { fetchStorefrontSnapshot, getCachedStorefrontSnapshot } from './services/supabaseStore';
 import { Header } from './components/Header';
-import { MobileMenu } from './components/MobileMenu';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
-import { ProductDetailModal } from './components/ProductDetailModal';
-import { CartDrawer } from './components/CartDrawer';
-import { CheckoutModal } from './components/CheckoutModal';
-import { SizeChartModal } from './components/SizeChartModal';
-import { SearchModal } from './components/SearchModal';
-import { WishlistDrawer } from './components/WishlistDrawer';
 import { Footer } from './components/Footer';
 import { BestSellersCarousel } from './components/BestSellersCarousel';
 import { ReviewsSection } from './components/ReviewsSection';
 import { WhatsAppIcon } from './components/WhatsAppIcon';
-import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AlertCircle, ArrowLeft, ArrowRight, ChevronRight, Sparkles, X } from 'lucide-react';
-import gulzarFestiveImg from './assets/images/gulzar_festive_boutique.png';
+import gulzarFestiveImg from './assets/images/gulzar_festive_boutique.webp';
+
+const MobileMenu = lazy(() =>
+  import('./components/MobileMenu').then((m) => ({ default: m.MobileMenu }))
+);
+const ProductDetailModal = lazy(() =>
+  import('./components/ProductDetailModal').then((m) => ({ default: m.ProductDetailModal }))
+);
+const CartDrawer = lazy(() =>
+  import('./components/CartDrawer').then((m) => ({ default: m.CartDrawer }))
+);
+const CheckoutModal = lazy(() =>
+  import('./components/CheckoutModal').then((m) => ({ default: m.CheckoutModal }))
+);
+const SizeChartModal = lazy(() =>
+  import('./components/SizeChartModal').then((m) => ({ default: m.SizeChartModal }))
+);
+const SearchModal = lazy(() =>
+  import('./components/SearchModal').then((m) => ({ default: m.SearchModal }))
+);
+const WishlistDrawer = lazy(() =>
+  import('./components/WishlistDrawer').then((m) => ({ default: m.WishlistDrawer }))
+);
+const AdminDashboard = lazy(() =>
+  import('./components/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
 
 export default function App() {
   const [pathname, setPathname] = useState<string>(() =>
     typeof window !== 'undefined' ? window.location.pathname : '/'
   );
 
-  // Storefront data (initialized with defaults for instant first paint, hydrated from Supabase)
-  const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS);
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(DEFAULT_HERO_SLIDES);
-  const [bestSellersList, setBestSellersList] = useState<BestSellerEntry[]>(DEFAULT_BEST_SELLERS);
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
-  const [homepageContent, setHomepageContent] =
-    useState<Record<string, HomepageContentSection>>(DEFAULT_HOMEPAGE_CONTENT);
-  const [settings, setSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_SETTINGS);
-  const [fromSupabase, setFromSupabase] = useState<boolean>(false);
+  // Instant hydration from cached live snapshot when available (background refresh still runs)
+  const [initialCache] = useState(() => getCachedStorefrontSnapshot());
+  const [products, setProducts] = useState<Product[]>(
+    () => initialCache?.products || DEFAULT_PRODUCTS
+  );
+  const [categories, setCategories] = useState<Category[]>(
+    () => initialCache?.categories || DEFAULT_CATEGORIES
+  );
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(
+    () => initialCache?.heroSlides || DEFAULT_HERO_SLIDES
+  );
+  const [bestSellersList, setBestSellersList] = useState<BestSellerEntry[]>(
+    () => initialCache?.bestSellers || DEFAULT_BEST_SELLERS
+  );
+  const [reviews, setReviews] = useState<Review[]>(
+    () => initialCache?.reviews || INITIAL_REVIEWS
+  );
+  const [homepageContent, setHomepageContent] = useState<Record<string, HomepageContentSection>>(
+    () => initialCache?.homepageContent || DEFAULT_HOMEPAGE_CONTENT
+  );
+  const [settings, setSettings] = useState<WebsiteSettings>(
+    () => initialCache?.settings || DEFAULT_WEBSITE_SETTINGS
+  );
+  const [fromSupabase, setFromSupabase] = useState<boolean>(
+    () => Boolean(initialCache?.fromSupabase)
+  );
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [dismissedConnectionError, setDismissedConnectionError] = useState<boolean>(false);
 
@@ -115,13 +148,21 @@ export default function App() {
 
   if (pathname.startsWith('/admin')) {
     return (
-      <AdminDashboard
-        onBackToStore={() => {
-          loadStorefront();
-          navigateTo('/');
-        }}
-        onStorefrontDataChanged={loadStorefront}
-      />
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#FAF6F2] flex items-center justify-center text-xs uppercase tracking-widest text-stone-600">
+            Loading Admin Portal...
+          </div>
+        }
+      >
+        <AdminDashboard
+          onBackToStore={() => {
+            loadStorefront();
+            navigateTo('/');
+          }}
+          onStorefrontDataChanged={loadStorefront}
+        />
+      </Suspense>
     );
   }
 
@@ -403,6 +444,8 @@ export default function App() {
                       <img
                         src={editorialSection.imageUrl || gulzarFestiveImg}
                         alt="Intakhab Silk Festive Ensemble"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-auto block hover:scale-105 transition-transform duration-700"
                       />
                     </div>
@@ -576,89 +619,91 @@ export default function App() {
       {/* Footer */}
       <Footer settings={settings} onOpenAdmin={() => navigateTo('/admin')} />
 
-      {/* Modals & Slide-overs */}
-      {selectedProduct && (
-        <ProductDetailModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onAddToCart={handleAddToCart}
-          isWishlisted={wishlistIds.includes(selectedProduct.id)}
-          onToggleWishlist={handleToggleWishlist}
-          onOpenSizeChart={() => setIsSizeChartOpen(true)}
-          deliveryFee={settings.deliveryFee}
-          deliveryTimeText={settings.deliveryTimeText}
-        />
-      )}
+      {/* Modals & Slide-overs (Code-split so storefront loads fast) */}
+      <Suspense fallback={null}>
+        {selectedProduct && (
+          <ProductDetailModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onAddToCart={handleAddToCart}
+            isWishlisted={wishlistIds.includes(selectedProduct.id)}
+            onToggleWishlist={handleToggleWishlist}
+            onOpenSizeChart={() => setIsSizeChartOpen(true)}
+            deliveryFee={settings.deliveryFee}
+            deliveryTimeText={settings.deliveryTimeText}
+          />
+        )}
 
-      {isCartOpen && (
-        <CartDrawer
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          items={cartItems}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveItem={handleRemoveItem}
-          onProceedToCheckout={() => {
-            setIsCartOpen(false);
-            setIsCheckoutOpen(true);
-          }}
-          deliveryFee={settings.deliveryFee}
-          deliveryTimeText={settings.deliveryTimeText}
-        />
-      )}
+        {isCartOpen && (
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            items={cartItems}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveItem={handleRemoveItem}
+            onProceedToCheckout={() => {
+              setIsCartOpen(false);
+              setIsCheckoutOpen(true);
+            }}
+            deliveryFee={settings.deliveryFee}
+            deliveryTimeText={settings.deliveryTimeText}
+          />
+        )}
 
-      {isCheckoutOpen && (
-        <CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
-          items={cartItems}
-          settings={settings}
-          onOrderSuccess={(order) => {
-            setRecentOrder(order);
-            setCartItems([]);
-          }}
-        />
-      )}
+        {isCheckoutOpen && (
+          <CheckoutModal
+            isOpen={isCheckoutOpen}
+            onClose={() => setIsCheckoutOpen(false)}
+            items={cartItems}
+            settings={settings}
+            onOrderSuccess={(order) => {
+              setRecentOrder(order);
+              setCartItems([]);
+            }}
+          />
+        )}
 
-      {isSizeChartOpen && (
-        <SizeChartModal
-          isOpen={isSizeChartOpen}
-          onClose={() => setIsSizeChartOpen(false)}
-        />
-      )}
+        {isSizeChartOpen && (
+          <SizeChartModal
+            isOpen={isSizeChartOpen}
+            onClose={() => setIsSizeChartOpen(false)}
+          />
+        )}
 
-      {isSearchOpen && (
-        <SearchModal
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-          products={products}
-          onSelectProduct={(p) => setSelectedProduct(p)}
-        />
-      )}
+        {isSearchOpen && (
+          <SearchModal
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            products={products}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+          />
+        )}
 
-      {isWishlistOpen && (
-        <WishlistDrawer
-          isOpen={isWishlistOpen}
-          onClose={() => setIsWishlistOpen(false)}
-          wishlistIds={wishlistIds}
-          products={products}
-          onRemoveWishlist={(id) =>
-            setWishlistIds((prev) => prev.filter((item) => item !== id))
-          }
-          onSelectProduct={(p) => setSelectedProduct(p)}
-        />
-      )}
+        {isWishlistOpen && (
+          <WishlistDrawer
+            isOpen={isWishlistOpen}
+            onClose={() => setIsWishlistOpen(false)}
+            wishlistIds={wishlistIds}
+            products={products}
+            onRemoveWishlist={(id) =>
+              setWishlistIds((prev) => prev.filter((item) => item !== id))
+            }
+            onSelectProduct={(p) => setSelectedProduct(p)}
+          />
+        )}
 
-      {isMobileMenuOpen && (
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-          onSelectCategory={(cat) => openCollectionView(cat)}
-          selectedCategory={selectedCategory}
-          onOpenSizeChart={() => setIsSizeChartOpen(true)}
-          categoriesList={navCategoriesList}
-          whatsappNumber={settings.whatsappNumber}
-        />
-      )}
+        {isMobileMenuOpen && (
+          <MobileMenu
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+            onSelectCategory={(cat) => openCollectionView(cat)}
+            selectedCategory={selectedCategory}
+            onOpenSizeChart={() => setIsSizeChartOpen(true)}
+            categoriesList={navCategoriesList}
+            whatsappNumber={settings.whatsappNumber}
+          />
+        )}
+      </Suspense>
 
       {/* Floating WhatsApp Direct Chat Button */}
       <a

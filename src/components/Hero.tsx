@@ -18,18 +18,28 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const activeSlides = slides && slides.length > 0 ? slides : DEFAULT_HERO_SLIDES;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [mountedIndices, setMountedIndices] = useState<number[]>(() =>
+    activeSlides.length > 1 ? [0, 1] : [0]
+  );
 
   useEffect(() => {
     setCurrentImageIndex(0);
-  }, [activeSlides.length]);
+    setMountedIndices(activeSlides.length > 1 ? [0, 1] : [0]);
+  }, [activeSlides]);
 
   const currentSlide = activeSlides[currentImageIndex] || activeSlides[0];
   const slideDuration = Math.max(800, currentSlide?.transitionMs || transitionMs || 2500);
 
   useEffect(() => {
     if (activeSlides.length <= 1) return;
+    const nextIndex = (currentImageIndex + 1) % activeSlides.length;
+    setMountedIndices((prev) =>
+      prev.includes(currentImageIndex) && prev.includes(nextIndex)
+        ? prev
+        : Array.from(new Set([...prev, currentImageIndex, nextIndex]))
+    );
     const timer = setTimeout(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % activeSlides.length);
+      setCurrentImageIndex(nextIndex);
     }, slideDuration);
     return () => clearTimeout(timer);
   }, [currentImageIndex, activeSlides.length, slideDuration]);
@@ -38,17 +48,22 @@ export const Hero: React.FC<HeroProps> = ({
     <section className="relative w-full overflow-hidden bg-[#16040A] border-b border-stone-200">
       {/* Full length portrait hero container */}
       <div className="relative w-full min-h-[740px] sm:min-h-[840px] md:min-h-[920px] lg:min-h-[980px] flex flex-col justify-end items-center">
-        {/* Background full-length rotating images */}
+        {/* Background full-length rotating images (incrementally mounted for fast LCP) */}
         {activeSlides.map((slide, index) => {
+          if (!mountedIndices.includes(index)) return null;
           const isVisible = index === currentImageIndex;
           const hasSeparateMobile = Boolean(
             slide.mobileImageUrl && slide.mobileImageUrl !== slide.desktopImageUrl
           );
+          const priority = index === 0 ? 'high' : 'low';
           return (
             <React.Fragment key={slide.id || index}>
               <img
                 src={slide.desktopImageUrl}
                 alt={slide.title || `Intakhab Luxury Prêt Signature Collection ${index + 1}`}
+                loading="eager"
+                decoding={index === 0 ? 'sync' : 'async'}
+                fetchPriority={priority}
                 className={`${hasSeparateMobile ? 'hidden sm:block' : 'block'} absolute inset-0 w-full h-full object-cover object-top sm:object-[center_12%] select-none transition-opacity duration-700 ease-in-out ${
                   isVisible ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -57,6 +72,9 @@ export const Hero: React.FC<HeroProps> = ({
                 <img
                   src={slide.mobileImageUrl}
                   alt={slide.title || `Intakhab Mobile Collection ${index + 1}`}
+                  loading="eager"
+                  decoding={index === 0 ? 'sync' : 'async'}
+                  fetchPriority={priority}
                   className={`sm:hidden absolute inset-0 w-full h-full object-cover object-top select-none transition-opacity duration-700 ease-in-out ${
                     isVisible ? 'opacity-100' : 'opacity-0'
                   }`}

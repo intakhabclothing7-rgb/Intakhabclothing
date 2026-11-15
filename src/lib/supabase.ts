@@ -54,6 +54,26 @@ export const supabaseConfigError: string | null = validateSupabaseConfig(
 
 export const isSupabaseConfigured = supabaseConfigError === null;
 
+if (isSupabaseConfigured && typeof document !== 'undefined' && supabaseUrl) {
+  try {
+    const origin = new URL(supabaseUrl).origin;
+    if (!document.querySelector(`link[rel="preconnect"][href="${origin}"]`)) {
+      const preconnect = document.createElement('link');
+      preconnect.rel = 'preconnect';
+      preconnect.href = origin;
+      preconnect.crossOrigin = 'anonymous';
+      document.head.appendChild(preconnect);
+
+      const dns = document.createElement('link');
+      dns.rel = 'dns-prefetch';
+      dns.href = origin;
+      document.head.appendChild(dns);
+    }
+  } catch {
+    // Ignore invalid URL errors safely
+  }
+}
+
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? createClient(supabaseUrl, supabasePublicKey, {
       auth: {
