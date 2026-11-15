@@ -19,7 +19,7 @@ values (
   '2211367921909',
   '03086293355',
   'mazz al rehman',
-  'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring · D.H.A Lahore',
+  'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring',
   2500,
   6
 )

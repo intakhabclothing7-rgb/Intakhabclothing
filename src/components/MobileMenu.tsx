@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ChevronRight, Phone, MapPin, Mail } from 'lucide-react';
+import { X, ChevronRight, Phone, Mail } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
 interface MobileMenuProps {
@@ -112,10 +112,6 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
         {/* Footer Contact Info */}
         <div className="p-5 bg-[#FAF6F2] border-t border-stone-200 text-xs text-stone-600 space-y-3">
-          <div className="flex items-start gap-2.5">
-            <MapPin className="w-4 h-4 text-black shrink-0 mt-0.5" />
-            <span>D.H.A Lahore, Pakistan</span>
-          </div>
           <div className="flex items-center gap-2.5">
             <Phone className="w-4 h-4 text-black shrink-0" />
             <a href={`tel:+${cleanWaDigits}`} className="hover:underline">

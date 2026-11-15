@@ -218,7 +218,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               ) : (
                 <p className="text-xs text-stone-600 leading-relaxed max-w-md mx-auto">
-                  Our tailoring team in Lahore will inspect your order and dispatch it within {deliveryTimeText}. Our courier representative will contact you at <strong>{completedOrder.customer.phone}</strong> prior to delivery.
+                  Our tailoring team will inspect your order and dispatch it within {deliveryTimeText}. Our courier representative will contact you at <strong>{completedOrder.customer.phone}</strong> prior to delivery.
                 </p>
               )}
 
@@ -346,7 +346,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         required
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        placeholder="e.g. House 42, Sector Y, Phase 3, D.H.A"
+                        placeholder="e.g. House 42, Street 5, Sector B"
                         className="w-full text-xs py-2 px-3 pl-8 border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5]"
                       />
                       <MapPin className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />

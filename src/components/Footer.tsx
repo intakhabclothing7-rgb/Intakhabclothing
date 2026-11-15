@@ -4,7 +4,6 @@ import {
   ChevronUp,
   Mail,
   Phone,
-  MapPin,
   Clock,
   Instagram,
   CheckCircle2,
@@ -83,13 +82,6 @@ export const Footer: React.FC<FooterProps> = ({
             </h3>
 
             <div className="space-y-3 text-xs text-stone-600">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-black shrink-0 mt-0.5" />
-                <p>
-                  <strong className="text-stone-900">Address:</strong> D.H.A Lahore, Pakistan
-                </p>
-              </div>
-
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-black shrink-0" />
                 <p>
@@ -176,7 +168,7 @@ export const Footer: React.FC<FooterProps> = ({
                   </p>
                   <p>
                     <strong className="text-stone-900 block">Custom Lengths:</strong>
-                    Each piece is tailored to your chosen shirt and pant length specifications at our Lahore facility.
+                    Each piece is tailored to your chosen shirt and pant length specifications.
                   </p>
                 </div>
               </div>
@@ -224,7 +216,7 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-8 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-stone-500">
           <p>© 2026 Intakhab. All rights reserved. Premium Stitched Suits.</p>
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <span>D.H.A Lahore Boutique</span>
+            <span>Bespoke Stitched Boutique</span>
             <span>·</span>
             <span>Silk Karandi & French Velvet</span>
             <span>·</span>

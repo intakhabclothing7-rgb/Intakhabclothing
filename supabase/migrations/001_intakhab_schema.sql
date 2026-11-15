@@ -519,7 +519,7 @@ create table if not exists public.website_settings (
   bank_account_number text not null default '2211367921909',
   jazzcash_number text not null default '03086293355',
   jazzcash_name text not null default 'mazz al rehman',
-  announcement_text text not null default 'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring · D.H.A Lahore',
+  announcement_text text not null default 'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring',
   hero_transition_ms integer not null default 2500 check (hero_transition_ms >= 800),
   best_sellers_limit integer not null default 6 check (best_sellers_limit between 1 and 24),
   updated_at timestamptz not null default timezone('utc', now())

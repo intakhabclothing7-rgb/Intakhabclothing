@@ -28,7 +28,7 @@ export const DEFAULT_WEBSITE_SETTINGS: WebsiteSettings = {
   jazzcashNumber: '03086293355',
   jazzcashName: 'mazz al rehman',
   announcementText:
-    'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring · D.H.A Lahore',
+    'Resort Collection is LIVE ✦ Nationwide Delivery Rs. 350 PKR · 5–7 Working Days ✦ Bespoke Stitched Tailoring',
   heroTransitionMs: 2500,
   bestSellersLimit: 6,
 };
