@@ -1,26 +1,48 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-const supabasePublicKey = (
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  ''
-).trim();
+function normalizeEnvValue(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().replace(/^(['"])(.*)\1$/, '$2').trim();
+}
+
+const supabaseUrl = normalizeEnvValue(import.meta.env.VITE_SUPABASE_URL).replace(/\/+$/, '');
+const supabasePublicKey =
+  normalizeEnvValue(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) ||
+  normalizeEnvValue(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 export const STORAGE_BUCKET = 'intakhab-media';
 
+function isServiceRoleJwt(token: string): boolean {
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const decoded = JSON.parse(atob(padded));
+    return decoded?.role === 'service_role';
+  } catch {
+    return false;
+  }
+}
+
 function validateSupabaseConfig(url: string, key: string): string | null {
-  if (!url || url.includes('YOUR_PROJECT_REF')) {
-    return 'Missing VITE_SUPABASE_URL environment variable.';
+  const missingUrl = !url || url.includes('YOUR_PROJECT_REF');
+  const missingKey = !key || key.includes('YOUR_SUPABASE_');
+
+  if (missingUrl && missingKey) {
+    return 'Missing VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY environment variables. Add them in Cloudflare Pages (Settings -> Environment variables) and trigger a new deployment.';
+  }
+  if (missingUrl) {
+    return 'Missing VITE_SUPABASE_URL environment variable. Add VITE_SUPABASE_URL in Cloudflare Pages (Settings -> Environment variables) and redeploy.';
   }
   if (!/^https:\/\/[a-zA-Z0-9.-]+/.test(url)) {
     return 'VITE_SUPABASE_URL must be a valid https:// Supabase project URL.';
   }
-  if (!key || key.includes('YOUR_SUPABASE_')) {
-    return 'Missing VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) environment variable.';
+  if (missingKey) {
+    return 'Missing VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) environment variable. Add it in Cloudflare Pages (Settings -> Environment variables) and redeploy.';
   }
-  if (key.startsWith('sb_secret_')) {
-    return 'Invalid client key: never use a secret/service_role key in VITE_ variables. Use the public publishable or anon key.';
+  if (key.startsWith('sb_secret_') || isServiceRoleJwt(key)) {
+    return 'Invalid client key: never use a service_role or secret key in VITE_ variables. Use the public publishable or anon key.';
   }
   return null;
 }

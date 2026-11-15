@@ -100,7 +100,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
 VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY`}
                 </pre>
                 <p className="text-[11px] text-stone-600 pt-1">
-                  Legacy <code>VITE_SUPABASE_ANON_KEY</code> is also supported as an alias. Never place <code>service_role</code> or <code>sb_secret_*</code> keys in frontend environment variables.
+                  Legacy <code>VITE_SUPABASE_ANON_KEY</code> is also supported as an alias. Never place <code>service_role</code> or <code>sb_secret_*</code> keys in frontend environment variables. On Cloudflare Pages, save both variables for Production &amp; Preview and trigger a fresh deployment so Vite bundles them.
                 </p>
               </div>
             </div>
