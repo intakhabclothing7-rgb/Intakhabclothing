@@ -1526,8 +1526,36 @@ export async function updateAdminOrderStatus(
   if (paymentStatus) {
     payload.payment_status = paymentStatus;
   }
-  const { error } = await client.from('orders').update(payload).eq('id', orderId);
+  const { data, error } = await client
+    .from('orders')
+    .update(payload)
+    .eq('id', orderId)
+    .select('id, status, payment_status')
+    .maybeSingle();
+
   if (error) throw new Error(error.message);
+  if (!data) {
+    throw new Error(
+      'Order status could not be updated. Ensure you are signed in as an active admin with update permission on orders.'
+    );
+  }
+}
+
+export async function deleteAdminOrder(orderId: string): Promise<void> {
+  const client = requireClient();
+  const { data, error } = await client
+    .from('orders')
+    .delete()
+    .eq('id', orderId)
+    .select('id')
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) {
+    throw new Error(
+      'Order could not be deleted. Ensure your admin role and the "Admins delete orders" RLS policy are enabled in Supabase.'
+    );
+  }
 }
 
 // Website Settings
