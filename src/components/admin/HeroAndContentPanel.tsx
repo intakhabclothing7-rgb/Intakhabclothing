@@ -18,7 +18,7 @@ import {
 import { HeroSlide, HomepageContentSection } from '../../types';
 import { DEFAULT_HERO_SLIDES, DEFAULT_HOMEPAGE_CONTENT } from '../../data/defaults';
 import gulzarFestiveImg from '../../assets/images/gulzar_festive_boutique.webp';
-import { uploadMediaToSupabase } from '../../lib/supabase';
+import { uploadMediaToSupabase, deleteMediaFromSupabase } from '../../lib/supabase';
 import {
   saveAdminHeroSlide,
   deleteAdminHeroSlide,
@@ -792,19 +792,15 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
   const activePreviewUrl = form.imageUrl || gulzarFestiveImg;
   const isUsingBuiltInDefault = !form.imageUrl || form.imageUrl === gulzarFestiveImg;
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const persistBanner = async (nextForm: HomepageContentSection, successMessage: string) => {
     setIsSaving(true);
     try {
       await saveAdminHomepageContent({
-        ...form,
+        ...nextForm,
         sectionKey: 'editorial_showcase',
       });
       await onRefresh();
-      onNotify({
-        type: 'success',
-        message: 'Showcase Banner photo & content saved live to your website.',
-      });
+      onNotify({ type: 'success', message: successMessage });
     } catch (err: any) {
       onNotify({
         type: 'error',
@@ -815,6 +811,39 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
     }
   };
 
+  const handleImageReplaced = async (newUrl: string) => {
+    const previousUrl = form.imageUrl;
+    const nextForm: HomepageContentSection = {
+      ...form,
+      sectionKey: 'editorial_showcase',
+      imageUrl: newUrl,
+    };
+    setForm(nextForm);
+    if (previousUrl && previousUrl !== newUrl) {
+      await deleteMediaFromSupabase(previousUrl);
+    }
+    await persistBanner(nextForm, 'New picture uploaded and previous picture replaced live.');
+  };
+
+  const handleResetToDefault = async () => {
+    const previousUrl = form.imageUrl;
+    const nextForm: HomepageContentSection = {
+      ...form,
+      sectionKey: 'editorial_showcase',
+      imageUrl: '',
+    };
+    setForm(nextForm);
+    if (previousUrl) {
+      await deleteMediaFromSupabase(previousUrl);
+    }
+    await persistBanner(nextForm, 'Custom picture removed and restored to original boutique photo.');
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await persistBanner(form, 'Showcase Banner photo & content saved live to your website.');
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-4 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -823,7 +852,7 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
             Showcase Banner (New Season Collection)
           </h3>
           <p className="text-xs text-stone-500">
-            Upload or change the main showcase boutique picture and text shown in the middle of your homepage.
+            Upload a new picture below to automatically replace the old picture and update your live homepage.
           </p>
         </div>
       </div>
@@ -856,10 +885,12 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
             <div className="p-4 bg-[#FAF6F2] border border-stone-200 space-y-3">
               <StorageImageUploader
                 folder="promotional"
-                label="Upload / Change Showcase Picture"
+                label="Upload New Picture (Replaces Old Photo Automatically)"
                 value={form.imageUrl}
-                onUploadedSingle={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
-                onClear={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+                hidePreview
+                buttonLabel="Upload & Replace Image"
+                onUploadedSingle={handleImageReplaced}
+                onClear={handleResetToDefault}
               />
 
               <div>
@@ -868,7 +899,7 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={form.imageUrl}
+                  value={isUsingBuiltInDefault ? '' : form.imageUrl}
                   onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
                   placeholder="https://..."
                   className="w-full py-2 px-3 border border-stone-300 bg-white focus:outline-none focus:border-[#D8C7A5]"
@@ -878,11 +909,12 @@ export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
               {!isUsingBuiltInDefault && (
                 <button
                   type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-stone-700 hover:text-black underline cursor-pointer"
+                  disabled={isSaving}
+                  onClick={handleResetToDefault}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-rose-700 hover:text-rose-900 underline cursor-pointer disabled:opacity-50"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Reset to Original Boutique Photo</span>
+                  <span>Remove Current Photo & Restore Original</span>
                 </button>
               )}
             </div>

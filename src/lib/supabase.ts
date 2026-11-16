@@ -155,3 +155,20 @@ export async function uploadMediaToSupabase(
     path: filePath,
   };
 }
+
+export async function deleteMediaFromSupabase(publicUrl?: string | null): Promise<void> {
+  if (!supabase || !publicUrl) return;
+  const marker = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return;
+
+  const rawPath = publicUrl.slice(idx + marker.length).split('?')[0];
+  const filePath = decodeURIComponent(rawPath);
+  if (!filePath) return;
+
+  try {
+    await supabase.storage.from(STORAGE_BUCKET).remove([filePath]);
+  } catch {
+    // Do not block UI if storage cleanup fails silently
+  }
+}

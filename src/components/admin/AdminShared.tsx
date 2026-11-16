@@ -68,6 +68,8 @@ interface StorageUploaderProps {
   onUploadedMultiple?: (urls: string[]) => void;
   onClear?: () => void;
   hint?: string;
+  hidePreview?: boolean;
+  buttonLabel?: string;
 }
 
 export const StorageImageUploader: React.FC<StorageUploaderProps> = ({
@@ -79,6 +81,8 @@ export const StorageImageUploader: React.FC<StorageUploaderProps> = ({
   onUploadedMultiple,
   onClear,
   hint = 'JPG, PNG, WEBP up to 8MB',
+  hidePreview = false,
+  buttonLabel,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -144,10 +148,14 @@ export const StorageImageUploader: React.FC<StorageUploaderProps> = ({
           ) : (
             <Upload className="w-4 h-4" />
           )}
-          <span>{isUploading ? `Uploading ${progress}%...` : multiple ? 'Upload Images' : 'Upload Image'}</span>
+          <span>
+            {isUploading
+              ? `Uploading ${progress}%...`
+              : buttonLabel || (multiple ? 'Upload Images' : 'Upload Image')}
+          </span>
         </button>
 
-        {!multiple && value && onClear && (
+        {!multiple && !hidePreview && value && onClear && (
           <button
             type="button"
             onClick={onClear}
@@ -174,7 +182,7 @@ export const StorageImageUploader: React.FC<StorageUploaderProps> = ({
         </div>
       )}
 
-      {!multiple && value && (
+      {!multiple && !hidePreview && value && (
         <div className="relative w-32 h-36 border border-stone-200 bg-stone-50 overflow-hidden">
           <img src={value} alt={label} className="w-full h-full object-cover object-top" />
           {onClear && (
