@@ -1585,6 +1585,13 @@ export async function saveAdminHomepageContent(section: HomepageContentSection):
     { onConflict: 'section_key' }
   );
   if (error) throw new Error(error.message);
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.removeItem(STOREFRONT_CACHE_KEY);
+    } catch {
+      // Ignore storage removal errors
+    }
+  }
 }
 
 // Orders Management

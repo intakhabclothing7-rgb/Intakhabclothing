@@ -16,6 +16,7 @@ import {
   X,
   Loader2,
   AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 import { AdminRoleRecord } from '../../types';
 import { DEFAULT_HERO_SLIDES } from '../../data/defaults';
@@ -29,7 +30,7 @@ import { AdminLogin } from './AdminLogin';
 import { AdminToast, ToastNotice } from './AdminShared';
 import { ProductsPanel } from './ProductsPanel';
 import { CategoriesPanel } from './CategoriesPanel';
-import { HeroSliderPanel, WebsiteContentPanel } from './HeroAndContentPanel';
+import { HeroSliderPanel, ShowcaseBannerPanel, WebsiteContentPanel } from './HeroAndContentPanel';
 import { BestSellersPanel, OrdersPanel } from './BestSellersAndOrdersPanel';
 import { ReviewsPanel, SettingsPanel } from './ReviewsAndSettingsPanel';
 
@@ -38,6 +39,7 @@ type AdminTab =
   | 'products'
   | 'categories'
   | 'hero'
+  | 'showcase'
   | 'bestsellers'
   | 'reviews'
   | 'orders'
@@ -158,6 +160,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       label: 'Hero Slider',
       icon: <Images className="w-4 h-4" />,
       badge: bundle ? bundle.heroSlides.length || DEFAULT_HERO_SLIDES.length : undefined,
+    },
+    {
+      id: 'showcase',
+      label: 'Showcase Banner',
+      icon: <Sparkles className="w-4 h-4" />,
     },
     {
       id: 'bestsellers',
@@ -425,6 +432,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                       <button
                         type="button"
+                        onClick={() => setActiveTab('showcase')}
+                        className="p-4 bg-[#FAF6F2] hover:bg-[#EDE1C8] border border-stone-200 text-left transition-colors cursor-pointer"
+                      >
+                        <strong className="block text-stone-900 uppercase tracking-wider">
+                          Showcase Banner →
+                        </strong>
+                        <span className="text-stone-600 mt-1 block">
+                          Change the New Season Collection boutique showcase picture & text.
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={() => setActiveTab('reviews')}
                         className="p-4 bg-[#FAF6F2] hover:bg-[#EDE1C8] border border-stone-200 text-left transition-colors cursor-pointer"
                       >
@@ -461,6 +481,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {activeTab === 'hero' && (
                 <HeroSliderPanel
                   slides={bundle.heroSlides}
+                  onRefresh={loadBundle}
+                  onNotify={showToast}
+                />
+              )}
+
+              {activeTab === 'showcase' && (
+                <ShowcaseBannerPanel
+                  contentMap={bundle.homepageContent}
                   onRefresh={loadBundle}
                   onNotify={showToast}
                 />

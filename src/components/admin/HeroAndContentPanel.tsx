@@ -12,9 +12,12 @@ import {
   Save,
   Upload,
   Database,
+  Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { HeroSlide, HomepageContentSection } from '../../types';
-import { DEFAULT_HERO_SLIDES } from '../../data/defaults';
+import { DEFAULT_HERO_SLIDES, DEFAULT_HOMEPAGE_CONTENT } from '../../data/defaults';
+import gulzarFestiveImg from '../../assets/images/gulzar_festive_boutique.webp';
 import { uploadMediaToSupabase } from '../../lib/supabase';
 import {
   saveAdminHeroSlide,
@@ -761,6 +764,203 @@ export const WebsiteContentPanel: React.FC<WebsiteContentPanelProps> = ({
           </div>
         );
       })}
+    </div>
+  );
+};
+
+interface ShowcaseBannerPanelProps {
+  contentMap: Record<string, HomepageContentSection>;
+  onRefresh: () => Promise<void>;
+  onNotify: (notice: ToastNotice) => void;
+}
+
+export const ShowcaseBannerPanel: React.FC<ShowcaseBannerPanelProps> = ({
+  contentMap,
+  onRefresh,
+  onNotify,
+}) => {
+  const defaultEditorial = DEFAULT_HOMEPAGE_CONTENT.editorial_showcase;
+  const [form, setForm] = useState<HomepageContentSection>(
+    () => contentMap.editorial_showcase || defaultEditorial
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setForm(contentMap.editorial_showcase || defaultEditorial);
+  }, [contentMap, defaultEditorial]);
+
+  const activePreviewUrl = form.imageUrl || gulzarFestiveImg;
+  const isUsingBuiltInDefault = !form.imageUrl || form.imageUrl === gulzarFestiveImg;
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await saveAdminHomepageContent({
+        ...form,
+        sectionKey: 'editorial_showcase',
+      });
+      await onRefresh();
+      onNotify({
+        type: 'success',
+        message: 'Showcase Banner photo & content saved live to your website.',
+      });
+    } catch (err: any) {
+      onNotify({
+        type: 'error',
+        message: err?.message || 'Failed to save Showcase Banner.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white p-4 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 className="font-serif text-lg font-semibold text-stone-900">
+            Showcase Banner (New Season Collection)
+          </h3>
+          <p className="text-xs text-stone-500">
+            Upload or change the main showcase boutique picture and text shown in the middle of your homepage.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSave} className="bg-white border border-stone-200 p-5 sm:p-6 space-y-6 text-xs">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Live Current Photo Preview */}
+          <div className="lg:col-span-5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-stone-800 uppercase tracking-wider text-[11px]">
+                Current Live Photo Preview
+              </span>
+              {isUsingBuiltInDefault && (
+                <span className="text-[10px] font-semibold bg-[#FAF6F2] border border-stone-200 px-2 py-0.5 text-stone-600">
+                  Built-in Default
+                </span>
+              )}
+            </div>
+            <div className="border-4 border-[#FAF6F2] shadow-md bg-stone-100 overflow-hidden">
+              <img
+                src={activePreviewUrl}
+                alt="Showcase Banner Preview"
+                className="w-full h-auto max-h-80 object-cover block"
+              />
+            </div>
+          </div>
+
+          {/* Photo Upload & Controls */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="p-4 bg-[#FAF6F2] border border-stone-200 space-y-3">
+              <StorageImageUploader
+                folder="promotional"
+                label="Upload / Change Showcase Picture"
+                value={form.imageUrl}
+                onUploadedSingle={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
+                onClear={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+              />
+
+              <div>
+                <label className="block text-[11px] font-medium text-stone-600 mb-1">
+                  Or paste image URL
+                </label>
+                <input
+                  type="text"
+                  value={form.imageUrl}
+                  onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
+                  placeholder="https://..."
+                  className="w-full py-2 px-3 border border-stone-300 bg-white focus:outline-none focus:border-[#D8C7A5]"
+                />
+              </div>
+
+              {!isUsingBuiltInDefault && (
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-stone-700 hover:text-black underline cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset to Original Boutique Photo</span>
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold text-stone-800 mb-1">Badge Text</label>
+                <div className="relative">
+                  <Sparkles className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    value={form.badgeText}
+                    onChange={(e) => setForm((prev) => ({ ...prev, badgeText: e.target.value }))}
+                    className="w-full py-2 pl-8 pr-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block font-semibold text-stone-800 mb-1">Heading</label>
+                <input
+                  type="text"
+                  value={form.heading}
+                  onChange={(e) => setForm((prev) => ({ ...prev, heading: e.target.value }))}
+                  className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-stone-800 mb-1">Description</label>
+              <textarea
+                rows={2}
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold text-stone-800 mb-1">Primary Button Label</label>
+                <input
+                  type="text"
+                  value={form.primaryCtaText}
+                  onChange={(e) => setForm((prev) => ({ ...prev, primaryCtaText: e.target.value }))}
+                  className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-stone-800 mb-1">Secondary Button Label</label>
+                <input
+                  type="text"
+                  value={form.secondaryCtaText}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, secondaryCtaText: e.target.value }))
+                  }
+                  className="w-full py-2 px-3 border border-stone-300 focus:outline-none focus:border-[#D8C7A5]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-4 border-t border-stone-200">
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] font-semibold uppercase tracking-widest inline-flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span>{isSaving ? 'Saving...' : 'Save Showcase Banner'}</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
