@@ -189,7 +189,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   ];
 
   const renderSidebarContent = () => (
-    <div className="flex flex-col h-full justify-between">
+    <div className="flex flex-col min-h-full justify-between">
       <div>
         <div className="p-5 border-b border-stone-200 bg-[#FAF6F2] flex items-center justify-between">
           <div>
@@ -301,38 +301,68 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-stone-200 px-4 sm:px-8 py-4 flex items-center justify-between gap-4 sticky top-0 z-20">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMobileNavOpen(true)}
-              className="lg:hidden p-2 -ml-2 text-stone-700 hover:text-black"
-              aria-label="Open admin menu"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="font-serif text-xl sm:text-2xl font-semibold text-stone-900 capitalize">
-                {navItems.find((n) => n.id === activeTab)?.label || 'Dashboard'}
-              </h1>
-              <p className="text-[11px] text-stone-500">
-                INTAKHAB Live Database & Media Control
-              </p>
+        <div className="sticky top-0 z-20 bg-white border-b border-stone-200">
+          <header className="px-4 sm:px-8 py-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(true)}
+                className="lg:hidden p-2 -ml-2 text-stone-700 hover:text-black cursor-pointer"
+                aria-label="Open admin menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="font-serif text-xl sm:text-2xl font-semibold text-stone-900 capitalize">
+                  {navItems.find((n) => n.id === activeTab)?.label || 'Dashboard'}
+                </h1>
+                <p className="text-[11px] text-stone-500">
+                  INTAKHAB Live Database & Media Control
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={isLoadingData}
-              onClick={loadBundle}
-              className="px-3.5 py-2 border border-stone-300 hover:bg-stone-50 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingData ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Refresh</span>
-            </button>
-          </div>
-        </header>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={isLoadingData}
+                onClick={loadBundle}
+                className="px-3.5 py-2 border border-stone-300 hover:bg-stone-50 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingData ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+            </div>
+          </header>
+
+          {/* Always-visible mobile/tablet admin menu bar */}
+          <nav
+            aria-label="Admin sections"
+            className="lg:hidden border-t border-stone-200 bg-[#FAF6F2] px-3 py-2 flex items-center gap-1.5 overflow-x-auto"
+          >
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setMobileNavOpen(false);
+                  }}
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium border transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-[#EDE1C8] text-black font-semibold border-[#D8C7A5]'
+                      : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
+                  }`}
+                >
+                  {item.icon}
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
         <main className="p-4 sm:p-8 flex-1 max-w-6xl w-full mx-auto">
           {loadError && (
