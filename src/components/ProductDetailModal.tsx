@@ -55,8 +55,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [shirtSize, setShirtSize] = useState<string>('');
   const [pantSize, setPantSize] = useState<string>('');
-  const [shirtLength, setShirtLength] = useState<string>('48(Standard)');
-  const [pantLength, setPantLength] = useState<string>('36(Standard)');
   const [quantity, setQuantity] = useState<number>(1);
   const [selectionError, setSelectionError] = useState<string | null>(null);
   const [showDeliveryInfo, setShowDeliveryInfo] = useState(false);
@@ -79,8 +77,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     setActiveImageIndex(0);
     setShirtSize('');
     setPantSize('');
-    setShirtLength('48(Standard)');
-    setPantLength('36(Standard)');
     setQuantity(1);
     setSelectionError(null);
     if (scrollBodyRef.current) {
@@ -113,8 +109,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       product,
       shirtSize,
       pantSize,
-      shirtLength,
-      pantLength,
+      shirtLength: 'Standard',
+      pantLength: 'Standard',
       quantity,
     });
   };
@@ -130,8 +126,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       product,
       shirtSize,
       pantSize,
-      shirtLength,
-      pantLength,
+      shirtLength: 'Standard',
+      pantLength: 'Standard',
       quantity,
     });
   };
@@ -140,8 +136,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     product.availableSizes && product.availableSizes.length > 0
       ? product.availableSizes
       : ['XS', 'S', 'M', 'L', 'XL'];
-  const shirtLengths = ['42', '44', '46', '48(Standard)'];
-  const pantLengths = ['32', '34', '36(Standard)', '38'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-stretch sm:items-center justify-center p-0 sm:p-4 overflow-hidden">
@@ -333,50 +327,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       </option>
                     ))}
                   </select>
-                </div>
-
-                {/* Shirt Length Radio Group (Screenshot 9) */}
-                <div className="space-y-2 pt-1">
-                  <label className="block text-xs font-medium text-stone-800">
-                    Shirt Length:
-                  </label>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-stone-700">
-                    {shirtLengths.map((len) => (
-                      <label key={len} className="flex items-center gap-1.5 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="shirtLength"
-                          value={len}
-                          checked={shirtLength === len}
-                          onChange={(e) => setShirtLength(e.target.value)}
-                          className="w-3.5 h-3.5 text-black focus:ring-black accent-[#D8C7A5]"
-                        />
-                        <span>{len}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Pant Length Radio Group (Screenshot 9) */}
-                <div className="space-y-2 pt-1">
-                  <label className="block text-xs font-medium text-stone-800">
-                    Pant Length:
-                  </label>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-stone-700">
-                    {pantLengths.map((len) => (
-                      <label key={len} className="flex items-center gap-1.5 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="pantLength"
-                          value={len}
-                          checked={pantLength === len}
-                          onChange={(e) => setPantLength(e.target.value)}
-                          className="w-3.5 h-3.5 text-black focus:ring-black accent-[#D8C7A5]"
-                        />
-                        <span>{len}</span>
-                      </label>
-                    ))}
-                  </div>
                 </div>
               </div>
 

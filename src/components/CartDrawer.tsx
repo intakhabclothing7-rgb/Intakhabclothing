@@ -125,9 +125,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <p className="text-stone-500 text-[11px]">
                       Shirt: <strong className="text-stone-700">{item.shirtSize}</strong> | Pant: <strong className="text-stone-700">{item.pantSize}</strong>
                     </p>
-                    <p className="text-stone-500 text-[11px]">
-                      Lengths: Shirt {item.shirtLength}" · Pant {item.pantLength}"
-                    </p>
+                    {(item.shirtLength !== 'Standard' || item.pantLength !== 'Standard') && (
+                      <p className="text-stone-500 text-[11px]">
+                        Lengths: Shirt {item.shirtLength}&quot; · Pant {item.pantLength}&quot;
+                      </p>
+                    )}
 
                     <div className="flex items-center justify-between pt-2">
                       <div className="flex items-center border border-stone-200">

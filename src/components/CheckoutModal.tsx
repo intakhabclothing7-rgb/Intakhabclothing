@@ -129,7 +129,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const getWhatsAppUrl = (order: PlacedOrder) => {
     const isBankOrJazzCash = order.customer.paymentMethod === 'bank_transfer';
     const paymentLabel = isBankOrJazzCash ? 'Bank Transfer / JazzCash' : 'Cash on Delivery (COD)';
-    const text = `*New Order Placed at Intakhab* 🛍️\nOrder ID: ${order.orderId}\nCustomer: ${order.customer.fullName} (${order.customer.phone})\nCity: ${order.customer.city}\nAddress: ${order.customer.address}\n\n*Items:*\n${order.items.map((i) => `• ${i.name} (${i.quantity}x) - Shirt: ${i.shirtSize}, Pant: ${i.pantSize}, Shirt Len: ${i.shirtLength}, Pant Len: ${i.pantLength} - Rs. ${i.price * i.quantity}`).join('\n')}\n\n*Delivery:* Rs. ${order.shipping}\n*Total: Rs. ${order.total.toLocaleString('en-PK')}*\nPayment: ${paymentLabel}${isBankOrJazzCash ? '\n\n(Attaching payment transfer screenshot for immediate dispatch)' : ''}`;
+    const text = `*New Order Placed at Intakhab* 🛍️\nOrder ID: ${order.orderId}\nCustomer: ${order.customer.fullName} (${order.customer.phone})\nCity: ${order.customer.city}\nAddress: ${order.customer.address}\n\n*Items:*\n${order.items.map((i) => {
+      const lengthPart =
+        i.shirtLength !== 'Standard' || i.pantLength !== 'Standard'
+          ? `, Shirt Len: ${i.shirtLength}, Pant Len: ${i.pantLength}`
+          : '';
+      return `• ${i.name} (${i.quantity}x) - Shirt: ${i.shirtSize}, Pant: ${i.pantSize}${lengthPart} - Rs. ${i.price * i.quantity}`;
+    }).join('\n')}\n\n*Delivery:* Rs. ${order.shipping}\n*Total: Rs. ${order.total.toLocaleString('en-PK')}*\nPayment: ${paymentLabel}${isBankOrJazzCash ? '\n\n(Attaching payment transfer screenshot for immediate dispatch)' : ''}`;
     return `https://wa.me/${cleanWaDigits}?text=${encodeURIComponent(text)}`;
   };
 

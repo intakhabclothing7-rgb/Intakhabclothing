@@ -274,8 +274,8 @@ export default function App() {
       product,
       shirtSize: defaultSize,
       pantSize: defaultSize,
-      shirtLength: '48(Standard)',
-      pantLength: '36(Standard)',
+      shirtLength: 'Standard',
+      pantLength: 'Standard',
       quantity: 1,
     });
   };
@@ -287,8 +287,8 @@ export default function App() {
       product,
       shirtSize: defaultSize,
       pantSize: defaultSize,
-      shirtLength: '48(Standard)',
-      pantLength: '36(Standard)',
+      shirtLength: 'Standard',
+      pantLength: 'Standard',
       quantity: 1,
     });
   };
