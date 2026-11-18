@@ -461,8 +461,8 @@ export default function App() {
 
             {/* Section: NEW ARRIVALS */}
             <section id="new-arrivals" className="py-12 sm:py-16 bg-white border-b border-stone-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between mb-8 sm:mb-12 border-b border-stone-200 pb-4 gap-3">
+              <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between mb-6 sm:mb-10 border-b border-stone-200 pb-4 gap-3 px-1.5 sm:px-0">
                   <div>
                     <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-950 font-bold tracking-tight">
                       {newArrivalsSection.heading || 'NEW ARRIVAL'}
@@ -494,7 +494,7 @@ export default function App() {
                   <div
                     className={`grid grid-cols-2 ${
                       products.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'
-                    } gap-4 sm:gap-6 lg:gap-8`}
+                    } gap-1.5 sm:gap-4 lg:gap-6`}
                   >
                     {products.map((product) => (
                       <ProductCard
@@ -674,7 +674,7 @@ export default function App() {
                 <div
                   className={`grid grid-cols-2 ${
                     displayedProducts.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-3 lg:grid-cols-4'
-                  } gap-4 sm:gap-6`}
+                  } gap-1.5 sm:gap-4 lg:gap-6`}
                 >
                   {displayedProducts.map((product) => (
                     <ProductCard

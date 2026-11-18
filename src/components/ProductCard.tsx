@@ -72,7 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
           <h3 className="font-serif text-sm sm:text-lg text-stone-950 font-bold group-hover:text-black transition-colors leading-snug">
             {product.name}
