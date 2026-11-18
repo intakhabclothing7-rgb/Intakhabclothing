@@ -14,6 +14,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { Product } from '../types';
+import { getSizeChartEntry } from '../data/sizeChart';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -305,12 +306,26 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     className="w-full text-xs py-2.5 px-3 bg-white border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5] focus:ring-1 focus:ring-[#EDE1C8] text-stone-800 cursor-pointer"
                   >
                     <option value="">Choose one</option>
-                    {sizes.map((sz) => (
-                      <option key={sz} value={sz}>
-                        {sz} (Ready to wear)
-                      </option>
-                    ))}
+                    {sizes.map((sz) => {
+                      const entry = getSizeChartEntry(sz);
+                      return (
+                        <option key={sz} value={sz}>
+                          {entry
+                            ? `${sz} (Chest ${entry.chest}", Shoulder ${entry.shoulder}", Length ${entry.shirtLength}")`
+                            : `${sz} (Ready to wear)`}
+                        </option>
+                      );
+                    })}
                   </select>
+                  {shirtSize && (() => {
+                    const entry = getSizeChartEntry(shirtSize);
+                    if (!entry) return null;
+                    return (
+                      <p className="text-[11px] text-stone-600 bg-[#FAF6F2] px-2.5 py-1.5 border border-stone-200/80">
+                        Shirt <strong>{entry.size}</strong>: Shoulder {entry.shoulder}&quot; · Chest {entry.chest}&quot; · Hip {entry.hip}&quot; · Length {entry.shirtLength}&quot;
+                      </p>
+                    );
+                  })()}
                 </div>
 
                 {/* Pant Size Dropdown */}
@@ -327,12 +342,26 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     className="w-full text-xs py-2.5 px-3 bg-white border border-stone-300 rounded-none focus:outline-none focus:border-[#D8C7A5] focus:ring-1 focus:ring-[#EDE1C8] text-stone-800 cursor-pointer"
                   >
                     <option value="">Choose one</option>
-                    {sizes.map((sz) => (
-                      <option key={sz} value={sz}>
-                        {sz} (Tailored waist & hips)
-                      </option>
-                    ))}
+                    {sizes.map((sz) => {
+                      const entry = getSizeChartEntry(sz);
+                      return (
+                        <option key={sz} value={sz}>
+                          {entry
+                            ? `${sz} (Waist ${entry.trouserWaist}", Thigh ${entry.trouserThigh}")`
+                            : `${sz} (Tailored waist & hips)`}
+                        </option>
+                      );
+                    })}
                   </select>
+                  {pantSize && (() => {
+                    const entry = getSizeChartEntry(pantSize);
+                    if (!entry) return null;
+                    return (
+                      <p className="text-[11px] text-stone-600 bg-[#FAF6F2] px-2.5 py-1.5 border border-stone-200/80">
+                        Trouser <strong>{entry.size}</strong>: Waist {entry.trouserWaist}&quot; · Thigh {entry.trouserThigh}&quot;
+                      </p>
+                    );
+                  })()}
                 </div>
 
                 {/* Shirt Length Radio Group (Screenshot 9) */}

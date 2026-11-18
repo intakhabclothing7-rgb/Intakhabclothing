@@ -97,7 +97,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               }}
               className="w-full px-5 py-3 flex items-center justify-between text-xs text-stone-700 hover:bg-stone-50"
             >
-              <span>Size Guide & Chart</span>
+              <span>Size Chart</span>
               <ChevronRight className="w-4 h-4 text-stone-400" />
             </button>
             <a

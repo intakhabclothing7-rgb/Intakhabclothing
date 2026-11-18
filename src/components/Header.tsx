@@ -10,6 +10,7 @@ interface HeaderProps {
   onOpenMenu: () => void;
   onSelectCategory: (category: string) => void;
   onGoHome?: () => void;
+  onOpenSizeChart?: () => void;
   selectedCategory: string;
   categoriesList?: { label: string; value: string }[];
 }
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMenu,
   onSelectCategory,
   onGoHome,
+  onOpenSizeChart,
   selectedCategory,
   categoriesList,
 }) => {
@@ -141,6 +143,15 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
           ))}
+          {onOpenSizeChart && (
+            <button
+              type="button"
+              onClick={onOpenSizeChart}
+              className="hover:text-black transition-colors py-1 whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              SIZE CHART
+            </button>
+          )}
           <a
             href="#contact"
             className="hover:text-black transition-colors py-1 whitespace-nowrap shrink-0"

@@ -407,6 +407,7 @@ export default function App() {
         onOpenMenu={() => setIsMobileMenuOpen(true)}
         onSelectCategory={(cat) => openCollectionView(cat)}
         onGoHome={goHomeView}
+        onOpenSizeChart={() => setIsSizeChartOpen(true)}
         selectedCategory={selectedCategory}
         categoriesList={navCategoriesList}
       />
