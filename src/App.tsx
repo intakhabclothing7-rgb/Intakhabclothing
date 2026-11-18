@@ -481,7 +481,7 @@ export default function App() {
                   </button>
                 </div>
 
-                {newArrivals.length === 0 ? (
+                {products.length === 0 ? (
                   <div className="py-12 px-6 text-center bg-[#FAF6F2] border border-stone-200">
                     <p className="font-serif text-lg sm:text-xl text-stone-800">
                       New Arrivals Coming Soon
@@ -493,10 +493,10 @@ export default function App() {
                 ) : (
                   <div
                     className={`grid grid-cols-2 ${
-                      newArrivals.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'
+                      products.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'
                     } gap-4 sm:gap-6 lg:gap-8`}
                   >
-                    {newArrivals.slice(0, 4).map((product) => (
+                    {products.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
