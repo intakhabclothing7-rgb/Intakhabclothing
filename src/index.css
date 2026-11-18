@@ -15,7 +15,7 @@
   --color-blush: #EDE1C8;
   --color-blush-light: #FAF6F2;
   
-  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
@@ -23,6 +23,10 @@
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans);
+  }
+
+  body {
+    font-weight: 500;
   }
 }
 

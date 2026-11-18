@@ -462,19 +462,19 @@ export default function App() {
             {/* Section: NEW ARRIVALS */}
             <section id="new-arrivals" className="py-12 sm:py-16 bg-white border-b border-stone-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between mb-8 sm:mb-12 border-b border-stone-100 pb-4">
+                <div className="flex items-center justify-between mb-8 sm:mb-12 border-b border-stone-200 pb-4 gap-3">
                   <div>
-                    <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-900 font-medium tracking-tight">
+                    <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-950 font-bold tracking-tight">
                       {newArrivalsSection.heading || 'NEW ARRIVAL'}
                     </h2>
-                    <p className="text-xs text-stone-600 tracking-wider uppercase mt-1 font-medium">
+                    <p className="text-xs text-stone-800 tracking-wider uppercase mt-1 font-semibold">
                       {newArrivalsSection.subheading || 'Stitched Festive & Luxury Pret Edit'}
                     </p>
                   </div>
 
                   <button
                     onClick={() => openCollectionView('All')}
-                    className="py-2 px-5 sm:px-6 border border-stone-900 text-stone-900 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-semibold tracking-widest uppercase transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                    className="py-2 px-5 sm:px-6 border border-stone-900 text-stone-950 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-bold tracking-widest uppercase transition-all duration-200 flex items-center gap-1.5 cursor-pointer shrink-0"
                   >
                     <span>{newArrivalsSection.primaryCtaText || 'VIEW ALL'}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -529,16 +529,16 @@ export default function App() {
                   </div>
 
                   <div className="lg:col-span-5 space-y-5 text-center lg:text-left">
-                    <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold text-black bg-[#EDE1C8] px-3 py-1 border border-[#D8C7A5]">
-                      <Sparkles className="w-3.5 h-3.5 text-stone-800" />
+                    <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-black bg-[#EDE1C8] px-3 py-1 border border-[#D8C7A5]">
+                      <Sparkles className="w-3.5 h-3.5 text-stone-900" />
                       <span>{editorialSection.badgeText || 'NEW SEASON COLLECTION'}</span>
                     </div>
 
-                    <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 font-medium">
+                    <h2 className="font-serif text-3xl sm:text-4xl text-stone-950 font-bold">
                       {editorialSection.heading || 'Elegance in Every Thread'}
                     </h2>
 
-                    <p className="text-sm text-stone-600 leading-relaxed">
+                    <p className="text-sm text-stone-800 font-medium leading-relaxed">
                       {editorialSection.description ||
                         'Discover timeless styles, beautiful details, and outfits designed to make every moment special.'}
                     </p>
@@ -546,7 +546,7 @@ export default function App() {
                     <div className="pt-2 flex flex-col items-center lg:items-start gap-3">
                       <button
                         onClick={() => openCollectionView('All')}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-xs font-semibold tracking-wider uppercase transition-all duration-200 cursor-pointer"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-xs font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer"
                       >
                         <span>{editorialSection.primaryCtaText || 'EXPLORE COLLECTION'}</span>
                         <ArrowRight className="w-3.5 h-3.5 text-black" />
@@ -556,7 +556,7 @@ export default function App() {
                         href={editorialSection.secondaryCtaLink || settings.instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-2.5 border border-stone-900 text-stone-900 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-semibold tracking-wider uppercase transition-all duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 border border-stone-900 text-stone-950 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-bold tracking-wider uppercase transition-all duration-200"
                       >
                         <span>
                           {editorialSection.secondaryCtaText || 'Follow @intakhab__womens_clothing'}
@@ -630,7 +630,7 @@ export default function App() {
                   <span className="text-xs uppercase tracking-widest text-black font-bold">
                     The Ready-To-Wear Suite
                   </span>
-                  <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-900 font-medium mt-1">
+                  <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-950 font-bold mt-1">
                     {selectedCategory === 'All' ? 'All Stitched Suits' : selectedCategory}
                   </h2>
                 </div>

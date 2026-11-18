@@ -74,14 +74,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
-          <span className="text-[10px] uppercase tracking-wider text-stone-400 block mb-1">
+          <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-stone-700 font-bold block mb-1">
             {product.category}
           </span>
-          <h3 className="font-serif text-sm sm:text-lg text-stone-900 font-medium group-hover:text-black transition-colors leading-snug">
+          <h3 className="font-serif text-sm sm:text-lg text-stone-950 font-bold group-hover:text-black transition-colors leading-snug">
             {product.name}
           </h3>
           {product.urduName && (
-            <p className="font-serif text-xs text-[#D4A456] mt-0.5">
+            <p className="font-serif text-xs font-semibold text-[#B68637] mt-0.5">
               {product.urduName}
             </p>
           )}
@@ -90,16 +90,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-3 pt-2 border-t border-stone-100 space-y-2.5">
           <div className="flex items-baseline justify-between gap-2">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <p className="font-medium text-sm sm:text-base text-stone-900 tabular-nums">
+              <p className="font-bold text-sm sm:text-base text-stone-950 tabular-nums">
                 Rs.{product.price.toLocaleString('en-PK')}
               </p>
               {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-xs text-stone-400 line-through tabular-nums">
+                <span className="text-xs text-stone-600 font-medium line-through tabular-nums">
                   Rs.{product.originalPrice.toLocaleString('en-PK')}
                 </span>
               )}
             </div>
-            <span className="text-[10px] sm:text-[11px] text-stone-500 font-light whitespace-nowrap">
+            <span className="text-[10px] sm:text-[11px] text-stone-700 font-semibold whitespace-nowrap">
               {product.inStock ? 'Custom Lengths' : 'Sold Out'}
             </span>
           </div>
@@ -114,7 +114,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     e.stopPropagation();
                     if (product.inStock) onQuickAddToCart(product, e);
                   }}
-                  className="min-h-[38px] px-2 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-900 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="min-h-[38px] px-2 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-950 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ShoppingBag className="w-3 h-3 shrink-0 hidden sm:inline" />
                   <span>Add to Cart</span>
@@ -129,7 +129,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     e.stopPropagation();
                     if (product.inStock) onQuickBuyNow(product, e);
                   }}
-                  className="min-h-[38px] px-2 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-colors flex items-center justify-center whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="min-h-[38px] px-2 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {product.inStock ? 'Buy Now' : 'Sold Out'}
                 </button>

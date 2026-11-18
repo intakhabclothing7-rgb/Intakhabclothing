@@ -231,7 +231,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             <span className="text-xs uppercase tracking-widest text-black font-bold">
               Customer Experiences
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-900 font-medium mt-1">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-stone-950 font-bold mt-1">
               Client Reviews
             </h2>
             <div className="flex items-center gap-2.5 mt-2">
@@ -243,10 +243,10 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                   />
                 ))}
               </div>
-              <span className="text-xs font-semibold text-stone-900">
+              <span className="text-xs font-bold text-stone-950">
                 {averageRating} / 5.0
               </span>
-              <span className="text-xs text-stone-500">
+              <span className="text-xs font-semibold text-stone-700">
                 ({reviews.length} Verified Reviews)
               </span>
             </div>
@@ -258,7 +258,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               setIsFormOpen((prev) => !prev);
               setSubmitMessage(null);
             }}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-xs font-semibold tracking-widest uppercase transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-xs font-bold tracking-widest uppercase transition-colors cursor-pointer shrink-0"
           >
             <MessageSquarePlus className="w-4 h-4" />
             <span>{isFormOpen ? 'Close Review Form' : 'Write a Review'}</span>
@@ -435,27 +435,27 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <h3 className="font-serif text-base sm:text-lg font-semibold text-stone-900">
+                  <h3 className="font-serif text-base sm:text-lg font-bold text-stone-950">
                     {review.customerName}
                   </h3>
-                  <span className="inline-flex items-center gap-1 text-xs text-stone-600 bg-[#FAF6F2] px-2.5 py-0.5 border border-stone-200">
-                    <MapPin className="w-3 h-3 text-stone-500" />
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-stone-800 bg-[#FAF6F2] px-2.5 py-0.5 border border-stone-200">
+                    <MapPin className="w-3 h-3 text-stone-700" />
                     {review.city}
                   </span>
                   {review.verified && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Verified Buyer
                     </span>
                   )}
                   {review.isEditedByAdmin && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-stone-500 bg-stone-100 px-2 py-0.5">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-stone-600 bg-stone-100 px-2 py-0.5">
                       Edited by Administrator
                     </span>
                   )}
                 </div>
 
-                <span className="text-[11px] text-stone-400">{review.date}</span>
+                <span className="text-[11px] font-semibold text-stone-600">{review.date}</span>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">

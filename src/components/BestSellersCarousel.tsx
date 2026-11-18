@@ -114,13 +114,13 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Top Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="font-serif text-2xl sm:text-3xl text-stone-900 font-medium tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl text-stone-950 font-bold tracking-tight">
             {heading}
           </h2>
 
           <button
             onClick={onViewAll}
-            className="py-1.5 px-4 sm:px-5 border border-stone-900 text-stone-900 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-semibold tracking-wider uppercase transition-colors flex items-center gap-2 cursor-pointer"
+            className="py-1.5 px-4 sm:px-5 border border-stone-900 text-stone-950 hover:bg-[#EDE1C8] hover:border-[#EDE1C8] hover:text-black text-xs font-bold tracking-wider uppercase transition-colors flex items-center gap-2 cursor-pointer"
           >
             <span>{viewAllLabel}</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -200,7 +200,7 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
                 {currentSlide.customTitle || currentSlide.product?.name}
               </h3>
               {(currentSlide.customSubtitle || currentSlide.product?.material) && (
-                <p className="text-xs text-stone-500 font-normal">
+                <p className="text-xs text-stone-700 font-semibold">
                   {currentSlide.customSubtitle ||
                     `${currentSlide.product?.material} — Rs.${currentSlide.product?.price.toLocaleString('en-PK')}`}
                 </p>
@@ -218,7 +218,7 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
                           onQuickAddToCart(currentSlide.product, e);
                         }
                       }}
-                      className="min-h-[38px] px-4 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-900 text-[11px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="min-h-[38px] px-4 py-2 border border-stone-900 bg-white hover:bg-stone-900 hover:text-white text-stone-950 text-[11px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       Add to Cart
                     </button>
@@ -233,7 +233,7 @@ export const BestSellersCarousel: React.FC<BestSellersCarouselProps> = ({
                           onQuickBuyNow(currentSlide.product, e);
                         }
                       }}
-                      className="min-h-[38px] px-5 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[11px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="min-h-[38px] px-5 py-2 bg-[#EDE1C8] hover:bg-[#dfd0b2] text-black border border-[#D8C7A5] text-[11px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {currentSlide.product.inStock ? 'Buy Now' : 'Sold Out'}
                     </button>

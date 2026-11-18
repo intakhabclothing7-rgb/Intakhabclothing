@@ -54,13 +54,13 @@ export const Footer: React.FC<FooterProps> = ({
               decoding="async"
               className="h-14 sm:h-16 w-auto object-contain mx-auto sm:mx-0"
             />
-            <p className="font-serif text-xs text-stone-500 mt-2 tracking-widest uppercase">
-              Luxury Prêt & Bespoke Stitched Suits
+            <p className="font-serif text-xs sm:text-sm text-stone-800 mt-2 tracking-widest uppercase font-bold">
+              Luxury Prêt &amp; Bespoke Stitched Suits
             </p>
           </div>
 
-          <div className="max-w-md text-center sm:text-right text-xs text-stone-500 leading-relaxed">
-            Intakhab celebrates luxury Pakistani sartorial heritage. Each stitched piece is individually crafted in pure silks and velvets, complete with bespoke length customizations for contemporary women.
+          <div className="max-w-md text-center sm:text-right text-xs sm:text-sm text-stone-800 font-medium leading-relaxed">
+            Intakhab celebrates luxury Pakistani sartorial heritage. Each stitched piece is individually crafted in pure silks and velvets, complete with bespoke tailoring for contemporary women.
           </div>
         </div>
 
@@ -68,16 +68,16 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           {/* Column 1: CONTACT US */}
           <div className="md:col-span-6 space-y-4">
-            <h3 className="font-bold text-xs uppercase tracking-widest text-stone-900 border-b border-stone-100 pb-2">
+            <h3 className="font-bold text-xs sm:text-sm uppercase tracking-widest text-black border-b border-stone-200 pb-2">
               CONTACT US
             </h3>
 
-            <div className="space-y-3 text-xs text-stone-600">
+            <div className="space-y-3 text-xs sm:text-sm text-stone-800 font-medium">
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-black shrink-0" />
                 <p>
-                  <strong className="text-stone-900">Phone :</strong>{' '}
-                  <a href={`tel:+${cleanWaDigits}`} className="hover:text-black transition-colors font-medium">
+                  <strong className="font-bold text-black">Phone :</strong>{' '}
+                  <a href={`tel:+${cleanWaDigits}`} className="hover:text-black transition-colors font-semibold text-stone-900">
                     {settings.whatsappNumber}
                   </a>
                 </p>
@@ -86,8 +86,8 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-black shrink-0" />
                 <p>
-                  <strong className="text-stone-900">Email :</strong>{' '}
-                  <a href="mailto:intakhabclothing7@gmail.com" className="hover:text-black transition-colors font-medium">
+                  <strong className="font-bold text-black">Email :</strong>{' '}
+                  <a href="mailto:intakhabclothing7@gmail.com" className="hover:text-black transition-colors font-semibold text-stone-900">
                     intakhabclothing7@gmail.com
                   </a>
                 </p>
@@ -96,20 +96,19 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="flex items-start gap-2.5 pt-1">
                 <Clock className="w-4 h-4 text-black shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-stone-900 block">Customer Service Hours:</strong>
-                  <span>Monday - Saturday</span>
-                  <br />
-                  <span>9:00 am to 5:30 GMT+5.</span>
+                  <strong className="font-bold text-black block">Customer Service Hours:</strong>
+                  <span className="font-semibold text-stone-900 block">Monday - Saturday</span>
+                  <span className="font-semibold text-stone-900 block">9:00 am to 5:30 GMT+5.</span>
                 </div>
               </div>
             </div>
 
             {/* Social Links */}
-            <div className="pt-4 space-y-2">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-stone-900">
+            <div className="pt-4 space-y-2.5">
+              <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider text-black">
                 INTAKHAB
               </h4>
-              <div className="space-y-2 text-xs text-stone-600">
+              <div className="space-y-2 text-xs sm:text-sm text-stone-900 font-semibold">
                 <a
                   href={settings.instagramUrl}
                   target="_blank"
@@ -137,7 +136,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div>
               <button
                 onClick={() => setIsPoliciesOpen(!isPoliciesOpen)}
-                className="w-full flex items-center justify-between font-bold text-xs uppercase tracking-widest text-stone-900 border-b border-stone-100 pb-2"
+                className="w-full flex items-center justify-between font-bold text-xs sm:text-sm uppercase tracking-widest text-black border-b border-stone-200 pb-2 cursor-pointer"
               >
                 <span>OUR POLICIES</span>
                 {isPoliciesOpen ? (
@@ -147,19 +146,19 @@ export const Footer: React.FC<FooterProps> = ({
                 )}
               </button>
 
-              <div className={`mt-3 space-y-2 text-xs text-stone-600 ${isPoliciesOpen ? 'block' : 'hidden md:block'}`}>
-                <div className="p-3 bg-[#FAF6F2] border border-stone-200/80 space-y-2 text-[11px] leading-relaxed">
+              <div className={`mt-3 space-y-2 text-xs text-stone-800 font-medium ${isPoliciesOpen ? 'block' : 'hidden md:block'}`}>
+                <div className="p-3 bg-[#FAF6F2] border border-stone-200/80 space-y-2 text-xs leading-relaxed">
                   <p>
-                    <strong className="text-stone-900 block">Shipping & Delivery:</strong>
+                    <strong className="font-bold text-black block">Shipping &amp; Delivery:</strong>
                     Nationwide standard delivery takes {settings.deliveryTimeText} across Pakistan. Delivery charges are Rs. {settings.deliveryFee} PKR.
                   </p>
                   <p>
-                    <strong className="text-stone-900 block">Exchanges:</strong>
+                    <strong className="font-bold text-black block">Exchanges:</strong>
                     Unworn garments with tags intact can be exchanged within 7 days of delivery.
                   </p>
                   <p>
-                    <strong className="text-stone-900 block">Custom Lengths:</strong>
-                    Each piece is tailored to your chosen shirt and pant length specifications.
+                    <strong className="font-bold text-black block">Co-ord Tailoring:</strong>
+                    Each piece is stitched to our signature ready-to-wear Intakhab boutique fit.
                   </p>
                 </div>
               </div>
@@ -169,12 +168,12 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-stone-500">
+        <div className="pt-8 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-800 font-semibold">
           <p>© 2026 Intakhab. All rights reserved. Premium Stitched Suits.</p>
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <span>Bespoke Stitched Boutique</span>
             <span>·</span>
-            <span>Silk Karandi & French Velvet</span>
+            <span>Silk Karandi &amp; French Velvet</span>
             <span>·</span>
             <span>WhatsApp Concierge Available</span>
             {onOpenAdmin && (
@@ -183,7 +182,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <button
                   type="button"
                   onClick={onOpenAdmin}
-                  className="inline-flex items-center gap-1 text-stone-600 hover:text-black font-medium transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-stone-900 hover:text-black font-bold transition-colors cursor-pointer"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Admin Portal</span>
