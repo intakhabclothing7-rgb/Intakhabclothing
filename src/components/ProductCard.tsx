@@ -74,9 +74,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
-          <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-stone-700 font-bold block mb-1">
-            {product.category}
-          </span>
           <h3 className="font-serif text-sm sm:text-lg text-stone-950 font-bold group-hover:text-black transition-colors leading-snug">
             {product.name}
           </h3>
@@ -99,9 +96,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 </span>
               )}
             </div>
-            <span className="text-[10px] sm:text-[11px] text-stone-700 font-semibold whitespace-nowrap">
-              {product.inStock ? 'Custom Lengths' : 'Sold Out'}
-            </span>
+            {!product.inStock && (
+              <span className="text-[10px] sm:text-[11px] text-rose-700 font-bold whitespace-nowrap">
+                Sold Out
+              </span>
+            )}
           </div>
 
           {(onQuickAddToCart || onQuickBuyNow) && (
