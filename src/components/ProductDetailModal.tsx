@@ -86,6 +86,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   if (!product) return null;
 
+  const resolvedDeliveryFee =
+    Number.isFinite(Number(deliveryFee)) && Number(deliveryFee) !== 250 && Number(deliveryFee) > 0
+      ? Number(deliveryFee)
+      : 350;
+
   const handleNextImage = () => {
     if (product.images.length > 1) {
       setActiveImageIndex((prev) => (prev + 1) % product.images.length);
@@ -372,7 +377,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <p className="font-semibold text-black flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5" /> Nationwide Delivery (Pakistan)
                   </p>
-                  <p>• <strong>Delivery Charges:</strong> Rs. {deliveryFee} PKR flat nationwide.</p>
+                  <p>• <strong>Delivery Charges:</strong> Rs. {resolvedDeliveryFee} PKR flat nationwide.</p>
                   <p>• <strong>Delivery Time:</strong> {deliveryTimeText} via Courier with Cash on Delivery.</p>
                   <p>• <strong>Payment:</strong> Cash on Delivery (COD) or Secure Bank Transfer.</p>
                 </div>
@@ -519,7 +524,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                         <strong>Delivery Time:</strong> {deliveryTimeText} across Pakistan.
                       </p>
                       <p>
-                        <strong>Delivery Charges:</strong> Rs. {deliveryFee} PKR nationwide flat rate.
+                        <strong>Delivery Charges:</strong> Rs. {resolvedDeliveryFee} PKR nationwide flat rate.
                       </p>
                       <p>
                         <strong>Payment Methods:</strong> Cash on Delivery (COD) across Pakistan or Secure Bank Transfer.

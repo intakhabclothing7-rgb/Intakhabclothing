@@ -24,7 +24,14 @@ export const Footer: React.FC<FooterProps> = ({
   const [isPoliciesOpen, setIsPoliciesOpen] = useState(false);
 
   const cleanWaDigits = (settings.whatsappNumber || '+92 325 6253921').replace(/[^0-9]/g, '') || '923256253921';
+  const resolvedDeliveryFee =
+    Number.isFinite(Number(settings.deliveryFee)) &&
+    Number(settings.deliveryFee) !== 250 &&
+    Number(settings.deliveryFee) > 0
+      ? Number(settings.deliveryFee)
+      : 350;
   const announcementItems = (settings.announcementText || DEFAULT_WEBSITE_SETTINGS.announcementText)
+    .replace(/Rs\.?\s*250\b/gi, `Rs. ${resolvedDeliveryFee}`)
     .split('✦')
     .map((item) => item.trim())
     .filter(Boolean);
@@ -150,7 +157,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <div className="p-3 bg-[#FAF6F2] border border-stone-200/80 space-y-2 text-xs leading-relaxed">
                   <p>
                     <strong className="font-bold text-black block">Shipping &amp; Delivery:</strong>
-                    Nationwide standard delivery takes {settings.deliveryTimeText} across Pakistan. Delivery charges are Rs. {settings.deliveryFee} PKR.
+                    Nationwide standard delivery takes {settings.deliveryTimeText} across Pakistan. Delivery charges are Rs. {resolvedDeliveryFee} PKR.
                   </p>
                   <p>
                     <strong className="font-bold text-black block">Exchanges:</strong>

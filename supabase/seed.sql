@@ -23,7 +23,12 @@ values (
   2500,
   6
 )
-on conflict (id) do nothing;
+on conflict (id) do update
+  set delivery_fee = case
+        when public.website_settings.delivery_fee = 250 then 350
+        else public.website_settings.delivery_fee
+      end,
+      announcement_text = regexp_replace(public.website_settings.announcement_text, 'Rs\.?\s*250', 'Rs. 350', 'gi');
 
 -- 2. Seed Homepage Content Blocks
 insert into public.homepage_content (

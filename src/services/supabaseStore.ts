@@ -247,12 +247,22 @@ export async function verifyCategoriesConnection(): Promise<{
   };
 }
 
-const STOREFRONT_CACHE_KEY = 'intakhab_storefront_cache_v1';
+const STOREFRONT_CACHE_KEY = 'intakhab_storefront_cache_v2';
+const LEGACY_STOREFRONT_CACHE_KEY = 'intakhab_storefront_cache_v1';
 const STOREFRONT_CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
+
+function normalizeDeliveryFee(rawFee: unknown): number {
+  const numeric = Number(rawFee ?? DEFAULT_WEBSITE_SETTINGS.deliveryFee);
+  if (!Number.isFinite(numeric) || numeric <= 0 || numeric === 250) {
+    return DEFAULT_WEBSITE_SETTINGS.deliveryFee;
+  }
+  return numeric;
+}
 
 export function getCachedStorefrontSnapshot(): StorefrontSnapshot | null {
   if (typeof window === 'undefined') return null;
   try {
+    window.localStorage.removeItem(LEGACY_STOREFRONT_CACHE_KEY);
     const raw = window.localStorage.getItem(STOREFRONT_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { ts?: number; data?: StorefrontSnapshot };
@@ -261,6 +271,9 @@ export function getCachedStorefrontSnapshot(): StorefrontSnapshot | null {
     }
     if (!Array.isArray(parsed.data.products) || !Array.isArray(parsed.data.categories)) {
       return null;
+    }
+    if (parsed.data.settings) {
+      parsed.data.settings.deliveryFee = normalizeDeliveryFee(parsed.data.settings.deliveryFee);
     }
     return parsed.data;
   } catch {
@@ -455,10 +468,14 @@ export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
         ? (finalSettingsRes.data as Record<string, any>)
         : null;
 
+    const resolvedDeliveryFee = rawSettings
+      ? normalizeDeliveryFee(rawSettings.delivery_fee)
+      : DEFAULT_WEBSITE_SETTINGS.deliveryFee;
+
     const settings: WebsiteSettings = rawSettings
       ? {
           storeName: rawSettings.store_name || DEFAULT_WEBSITE_SETTINGS.storeName,
-          deliveryFee: Number(rawSettings.delivery_fee ?? DEFAULT_WEBSITE_SETTINGS.deliveryFee),
+          deliveryFee: resolvedDeliveryFee,
           deliveryTimeText:
             rawSettings.delivery_time_text || DEFAULT_WEBSITE_SETTINGS.deliveryTimeText,
           whatsappNumber:
@@ -471,8 +488,9 @@ export async function fetchStorefrontSnapshot(): Promise<StorefrontSnapshot> {
           jazzcashNumber:
             rawSettings.jazzcash_number || DEFAULT_WEBSITE_SETTINGS.jazzcashNumber,
           jazzcashName: rawSettings.jazzcash_name || DEFAULT_WEBSITE_SETTINGS.jazzcashName,
-          announcementText:
-            rawSettings.announcement_text || DEFAULT_WEBSITE_SETTINGS.announcementText,
+          announcementText: (
+            rawSettings.announcement_text || DEFAULT_WEBSITE_SETTINGS.announcementText
+          ).replace(/Rs\.?\s*250\b/gi, `Rs. ${resolvedDeliveryFee}`),
           heroTransitionMs: Number(
             rawSettings.hero_transition_ms ?? DEFAULT_WEBSITE_SETTINGS.heroTransitionMs
           ),
@@ -681,13 +699,19 @@ export async function submitPublicOrder(params: {
   }
 
   const resObj = typeof data === 'object' ? data : { id: String(data) };
+  const resolvedSubtotal = resObj.subtotal !== undefined ? Number(resObj.subtotal) : params.subtotal;
+  const rawReturnedShipping =
+    resObj.shipping_fee !== undefined ? Number(resObj.shipping_fee) : params.shippingFee;
+  const resolvedShippingFee =
+    rawReturnedShipping === 250 ? normalizeDeliveryFee(params.shippingFee) : rawReturnedShipping;
+  const resolvedTotal = resolvedSubtotal + resolvedShippingFee;
 
   return {
     id: resObj.id ? String(resObj.id) : undefined,
     orderNumber: resObj.order_number ? String(resObj.order_number) : params.orderNumber,
-    subtotal: resObj.subtotal !== undefined ? Number(resObj.subtotal) : params.subtotal,
-    shippingFee: resObj.shipping_fee !== undefined ? Number(resObj.shipping_fee) : params.shippingFee,
-    total: resObj.total !== undefined ? Number(resObj.total) : params.total,
+    subtotal: resolvedSubtotal,
+    shippingFee: resolvedShippingFee,
+    total: resolvedTotal,
     syncedToSupabase: true,
   };
 }
@@ -1008,10 +1032,24 @@ export async function fetchAdminDashboardBundle(): Promise<AdminDashboardBundle>
   }));
 
   const s = settingsRes.data;
+  if (s && Number(s.delivery_fee) === 250) {
+    try {
+      await client.from('website_settings').update({ delivery_fee: 350 }).eq('id', 1);
+      s.delivery_fee = 350;
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(STOREFRONT_CACHE_KEY);
+      }
+    } catch {
+      // Ignore auto-heal write failure; normalized fee still applies cleanly
+    }
+  }
+  const normalizedAdminDeliveryFee = s
+    ? normalizeDeliveryFee(s.delivery_fee)
+    : DEFAULT_WEBSITE_SETTINGS.deliveryFee;
   const settings: WebsiteSettings = s
     ? {
         storeName: s.store_name,
-        deliveryFee: Number(s.delivery_fee),
+        deliveryFee: normalizedAdminDeliveryFee,
         deliveryTimeText: s.delivery_time_text,
         whatsappNumber: s.whatsapp_number,
         instagramUrl: s.instagram_url,
@@ -1640,11 +1678,12 @@ export async function deleteAdminOrder(orderId: string): Promise<void> {
 // Website Settings
 export async function saveAdminSettings(settings: WebsiteSettings): Promise<void> {
   const client = requireClient();
+  const normalizedFee = normalizeDeliveryFee(settings.deliveryFee);
   const { error } = await client.from('website_settings').upsert(
     {
       id: 1,
       store_name: settings.storeName,
-      delivery_fee: Number(settings.deliveryFee),
+      delivery_fee: normalizedFee,
       delivery_time_text: settings.deliveryTimeText,
       whatsapp_number: settings.whatsappNumber,
       instagram_url: settings.instagramUrl,
@@ -1660,4 +1699,12 @@ export async function saveAdminSettings(settings: WebsiteSettings): Promise<void
     { onConflict: 'id' }
   );
   if (error) throw new Error(error.message);
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.removeItem(STOREFRONT_CACHE_KEY);
+      window.localStorage.removeItem(LEGACY_STOREFRONT_CACHE_KEY);
+    } catch {
+      // Ignore storage removal errors
+    }
+  }
 }

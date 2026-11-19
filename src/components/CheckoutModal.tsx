@@ -50,7 +50,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = Number(settings.deliveryFee ?? 350);
+  const rawFee = Number(settings.deliveryFee ?? 350);
+  const shipping = Number.isFinite(rawFee) && rawFee !== 250 && rawFee > 0 ? rawFee : 350;
   const total = subtotal + shipping;
   const cleanWaDigits = (settings.whatsappNumber || '+92 325 6253921').replace(/[^0-9]/g, '') || '923256253921';
   const deliveryTimeText = settings.deliveryTimeText || '5–7 working days';
@@ -96,6 +97,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         customer: formData,
       });
 
+      const orderSubtotal = result.subtotal ?? subtotal;
+      const orderShipping =
+        result.shippingFee !== undefined && result.shippingFee !== 250 && result.shippingFee > 0
+          ? result.shippingFee
+          : shipping;
+      const orderTotal = orderSubtotal + orderShipping;
+
       const order: PlacedOrder = {
         id: result.id,
         orderId: result.orderNumber || orderNumber,
@@ -105,9 +113,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           day: 'numeric',
         }),
         items: [...items],
-        subtotal: result.subtotal ?? subtotal,
-        shipping: result.shippingFee ?? shipping,
-        total: result.total ?? total,
+        subtotal: orderSubtotal,
+        shipping: orderShipping,
+        total: orderTotal,
         customer: formData,
         status: 'pending',
       };
@@ -134,8 +142,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         i.shirtLength !== 'Standard' || i.pantLength !== 'Standard'
           ? `, Shirt Len: ${i.shirtLength}, Pant Len: ${i.pantLength}`
           : '';
-      return `• ${i.name} (${i.quantity}x) - Shirt: ${i.shirtSize}, Pant: ${i.pantSize}${lengthPart} - Rs. ${i.price * i.quantity}`;
-    }).join('\n')}\n\n*Delivery:* Rs. ${order.shipping}\n*Total: Rs. ${order.total.toLocaleString('en-PK')}*\nPayment: ${paymentLabel}${isBankOrJazzCash ? '\n\n(Attaching payment transfer screenshot for immediate dispatch)' : ''}`;
+      return `• ${i.name} (${i.quantity}x) - Shirt: ${i.shirtSize}, Pant: ${i.pantSize}${lengthPart} - Rs. ${(i.price * i.quantity).toLocaleString('en-PK')}`;
+    }).join('\n')}\n\n*Suit Subtotal:* Rs. ${order.subtotal.toLocaleString('en-PK')}\n*Delivery Charges:* Rs. ${order.shipping}\n*Total: Rs. ${order.total.toLocaleString('en-PK')}*\nPayment: ${paymentLabel}${isBankOrJazzCash ? '\n\n(Attaching payment transfer screenshot for immediate dispatch)' : ''}`;
     return `https://wa.me/${cleanWaDigits}?text=${encodeURIComponent(text)}`;
   };
 
@@ -207,12 +215,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between border-b border-stone-200 pb-2">
+                  <span className="text-stone-500">Suit Subtotal:</span>
+                  <span className="font-semibold text-stone-900 tabular-nums">
+                    Rs.{completedOrder.subtotal.toLocaleString('en-PK')}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-stone-200 pb-2">
                   <span className="text-stone-500">Delivery Charges:</span>
                   <span className="font-semibold text-stone-900">Rs. {completedOrder.shipping} ({deliveryTimeText})</span>
                 </div>
                 <div className="flex justify-between pt-1 text-sm font-bold text-stone-950">
                   <span>Total Amount:</span>
-                  <span className="text-black font-bold">Rs.{completedOrder.total.toLocaleString('en-PK')}</span>
+                  <span className="text-black font-bold tabular-nums">Rs.{completedOrder.total.toLocaleString('en-PK')}</span>
                 </div>
               </div>
 
@@ -269,17 +283,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               )}
 
               {/* Order Summary Strip */}
-              <div className="bg-[#FAF6F2] p-4 rounded-lg border border-stone-200 text-xs flex items-center justify-between">
-                <div>
+              <div className="bg-[#FAF6F2] p-4 rounded-lg border border-stone-200 text-xs flex items-center justify-between gap-3">
+                <div className="space-y-0.5">
                   <span className="font-semibold text-stone-900 block">
-                    {items.length} {items.length === 1 ? 'Ensemble' : 'Ensembles'} in Order
+                    {items.length} {items.length === 1 ? 'Ensemble' : 'Ensembles'} · Subtotal Rs.{subtotal.toLocaleString('en-PK')}
                   </span>
-                  <span className="text-stone-500">
-                    Standard Delivery Rs. {shipping} PKR ({deliveryTimeText})
+                  <span className="text-stone-600 font-medium block">
+                    Delivery Charges: Rs. {shipping} PKR ({deliveryTimeText})
                   </span>
                 </div>
-                <div className="text-right">
-                  <span className="text-stone-400 text-[10px] uppercase block">Total</span>
+                <div className="text-right shrink-0">
+                  <span className="text-stone-500 text-[10px] uppercase block font-semibold">Total</span>
                   <span className="text-base font-bold text-black tabular-nums">
                     Rs.{total.toLocaleString('en-PK')}
                   </span>

@@ -27,7 +27,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shippingFee = deliveryFee;
+  const shippingFee = Number.isFinite(Number(deliveryFee)) && Number(deliveryFee) !== 250 && Number(deliveryFee) > 0
+    ? Number(deliveryFee)
+    : 350;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -165,11 +167,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         {items.length > 0 && (
           <div className="p-5 bg-white border-t border-stone-200 space-y-3 shadow-lg">
             <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between text-stone-500">
-                <span>Delivery Charges ({deliveryTimeText})</span>
-                <span>Rs. {shippingFee}</span>
+              <div className="flex justify-between text-stone-700 font-medium">
+                <span>Subtotal</span>
+                <span className="tabular-nums">Rs.{subtotal.toLocaleString('en-PK')}</span>
               </div>
-              <div className="flex justify-between text-base font-semibold text-stone-900 pt-1 border-t border-stone-100">
+              <div className="flex justify-between text-stone-600">
+                <span>Delivery Charges ({deliveryTimeText})</span>
+                <span className="font-semibold text-stone-900 tabular-nums">Rs. {shippingFee}</span>
+              </div>
+              <div className="flex justify-between text-base font-semibold text-stone-900 pt-1.5 border-t border-stone-100">
                 <span>Estimated Total</span>
                 <span className="tabular-nums text-black font-bold">
                   Rs.{(subtotal + shippingFee).toLocaleString('en-PK')}
