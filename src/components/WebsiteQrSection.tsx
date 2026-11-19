@@ -2,27 +2,21 @@ import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { QrCode, Download, Copy, Check, Smartphone } from 'lucide-react';
 
+const OFFICIAL_WEBSITE_URL = 'https://intakhab.site';
+
 export const WebsiteQrSection: React.FC = () => {
-  const [websiteUrl, setWebsiteUrl] = useState<string>(() =>
-    typeof window !== 'undefined' ? window.location.origin : 'https://intakhabclothing.pages.dev'
-  );
+  const websiteUrl = OFFICIAL_WEBSITE_URL;
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setWebsiteUrl(window.location.origin);
-    }
-  }, []);
 
   useEffect(() => {
     let active = true;
     QRCode.toDataURL(websiteUrl, {
       width: 512,
-      margin: 2,
+      margin: 4,
       errorCorrectionLevel: 'M',
       color: {
-        dark: '#1C1917',
+        dark: '#000000',
         light: '#FFFFFF',
       },
     })
